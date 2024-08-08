@@ -1,0 +1,31 @@
+variables:
+  # Keeping this low helps jobs find an available runner without waiting.
+  # @see https://git.drupalcode.org/project/gitlab_templates/-/blob/main/includes/include.drupalci.main.yml?ref_type=heads
+  KUBERNETES_CPU_REQUEST: 2
+  PHP_VERSION: 8.3
+
+default:
+  # New pushes can stop the current job and start a new one.
+  interruptible: true
+  image:
+    name: 'drupalci/php-$PHP_VERSION-apache:production'
+  retry:
+    max: 2
+    when:
+      - unknown_failure
+      - api_failure
+      - stuck_or_timeout_failure
+      - runner_system_failure
+      - scheduler_failure
+
+build:
+  stage: build
+  variables:
+    COMPOSER_NO_INTERACTION: 1
+  before_script:
+    # Expose the project template, installer, and component recipes to Composer.
+    - composer config --global repositories.template path $PWD/project_template
+    - composer config --global repositories.installer path $PWD/installer
+    - find $PWD/recipes -type d -exec composer config --global repositories.{} path {} ';'
+  script:
+    - composer create-project drupal/drupal-cms-project /var/www/drupal --stability dev
