@@ -22,6 +22,7 @@
         "drupal/drupal_cms_media_tools": "*",
         "drupal/drupal_cms_multilingual": "*",
         "drupal/drupal_cms_page_content_type": "*",
+        "drupal/drupal_cms_patches": "*",
         "drupal/drupal_cms_workflows": "*",
         "drupal/uli_custom_workflow": "^1"
     }

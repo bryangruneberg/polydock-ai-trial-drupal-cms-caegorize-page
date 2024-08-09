@@ -1,11 +1,11 @@
-name: Installer
+name: Drupal CMS Installer
 type: profile
 core_version_requirement: '>=10.3'
 description: 'Provides install-time tweaks for Drupal CMS. Not to be used in production.'
 # Drupal CMS isn't a distribution, but we need to use this `distribution` key in order
 # to skip the installer's profile selection step.
 distribution:
-  name: Starshot
+  name: Drupal CMS
   install:
     # Redirect to the project browser after installing.
     finish_url: 'admin/modules/browse'

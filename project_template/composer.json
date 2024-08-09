@@ -24,11 +24,6 @@
         "drupal/drupal_cms_installer": "*",
         "drush/drush": "^12.5"
     },
-    "require-dev": {
-        "drupal/core-dev": "^10.3",
-        "drupal/default_content": "^2.0@alpha",
-        "weitzman/drupal-test-traits": "^2.2"
-    },
     "conflict": {
         "drupal/drupal": "*"
     },
@@ -78,15 +73,6 @@
                 "  * Get support: https://drupal.org/support",
                 "  * Get involved with the Drupal community: https://drupal.org/getting-involved"
             ]
-        },
-        "patches": {
-            "drupal/core": {
-                "#3303126: Allow recipes to reuse existing config values": "./patches/core/recipes-150.patch",
-                "#3464550: Create config action which can create an entity for every bundle of another entity type": "./patches/core/8975.patch",
-                "#3303127: Determine which core config entity methods should be config actions": "./patches/core/7940.patch",
-                "Ensure core recipes that affect user roles also install the User module": "./patches/core/core-recipes-user-import.patch",
-                "#3416357: Convert QueueFactory to use a service locator": "./patches/core/3416357-10.3.x-only.patch"
-            }
         }
     },
     "scripts": {
@@ -97,26 +83,9 @@
             "rm -f drush-install.yml",
             "drush webform-libraries-download"
         ],
-        "drupal:install-dev": [
-            "cd web/sites/default && chmod +w . && rm -rf settings.php files",
-            "@drupal:install",
-            "drush config:set --yes system.logging error_level verbose",
-            "drush install --yes default_content",
-            "drush user:password editor editor",
-            "drush user:unblock editor"
-        ],
-        "drupal:rebuild": [
-            "sudo rm -rf vendor web composer.lock patches.lock.json | true",
-            "git checkout web/.gitkeep",
-            "@composer install",
-            "@drupal:install"
-        ],
         "drupal:run-server": [
             "Composer\\Config::disableProcessTimeout",
             "@php -d max_execution_time=0 web/core/scripts/drupal quick-start"
-        ],
-        "drupal:run-tests": [
-            "./vendor/bin/phpunit"
         ],
         "quick-start": [
             "@drupal:install",
@@ -125,10 +94,7 @@
     },
     "scripts-descriptions": {
         "drupal:install": "Installs Drupal CMS.",
-        "drupal:install-dev": "Installs Drupal CMS, with additional modules and configuration tweaks for development.",
-        "drupal:rebuild": "Rebuilds the codebase and reinstalls Drupal CMS from scratch. Should only be used for internal development.",
         "drupal:run-server": "Runs Drupal CMS using the PHP webserver and opens it in the default browser.",
-        "drupal:run-tests": "Runs Drupal CMS's automated test suite.",
         "quick-start": "Installs Drupal CMS and opens it in a browser."
     },
     "scripts-aliases": {
@@ -139,14 +105,6 @@
         "drupal:run-server": [
             "rs",
             "serve"
-        ],
-        "drupal:run-tests": [
-            "test"
         ]
-    },
-    "autoload-dev": {
-        "psr-4": {
-            "Drupal\\drupal_cms_installer\\": "installer/src"
-        }
     }
 }

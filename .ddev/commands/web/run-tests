@@ -1,0 +1,7 @@
+#!/usr/bin/env sh
+
+## Description: Runs Drupal CMS's automated test suite.
+## Usage: run-tests
+## Example: "ddev run-tests"
+
+DTT_BASE_URL=$DDEV_PRIMARY_URL ./vendor/bin/phpunit --bootstrap ./vendor/weitzman/drupal-test-traits/src/bootstrap-fast.php --testdox --configuration ./web/core/phpunit.xml.dist tests

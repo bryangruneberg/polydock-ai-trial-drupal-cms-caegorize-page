@@ -22,10 +22,5 @@ build:
   stage: build
   variables:
     COMPOSER_NO_INTERACTION: 1
-  before_script:
-    # Expose the project template, installer, and component recipes to Composer.
-    - composer config --global repositories.template path $PWD/project_template
-    - composer config --global repositories.installer path $PWD/installer
-    - find $PWD/recipes -type d -exec composer config --global repositories.{} path {} ';'
   script:
-    - composer create-project drupal/drupal-cms-project /var/www/drupal --stability dev
+    - composer install
