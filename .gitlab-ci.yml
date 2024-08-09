@@ -2,13 +2,10 @@ variables:
   # Keeping this low helps jobs find an available runner without waiting.
   # @see https://git.drupalcode.org/project/gitlab_templates/-/blob/main/includes/include.drupalci.main.yml?ref_type=heads
   KUBERNETES_CPU_REQUEST: 2
-  PHP_VERSION: 8.3
 
 default:
   # New pushes can stop the current job and start a new one.
   interruptible: true
-  image:
-    name: 'drupalci/php-$PHP_VERSION-apache:production'
   retry:
     max: 2
     when:
@@ -18,9 +15,21 @@ default:
       - runner_system_failure
       - scheduler_failure
 
-build:
-  stage: build
+test:
+  stage: test
   variables:
     COMPOSER_NO_INTERACTION: 1
+    DTT_BASE_URL: 'http://localhost/$_WEB_ROOT'
+    _WEB_ROOT: web
+  image:
+    name: 'drupalci/php-8.3-apache:production'
+  services:
+    - name: drupalci/mysql-5.7:production
+      alias: database
   script:
     - composer install
+    - ./vendor/bin/drush site:install --yes --db-url mysql://drupaltestbot:drupaltestbotpw@database/drupal
+    - chown -R www-data:www-data $_WEB_ROOT
+    - ln -s -f $CI_PROJECT_DIR/$_WEB_ROOT /var/www/html
+    - service apache2 start
+    - composer run-tests

@@ -132,5 +132,14 @@
             "web/recipes/{$name}": ["type:drupal-recipe"],
             "web/themes/custom/{$name}": ["type:drupal-custom-theme"]
         }
+    },
+    "scripts": {
+        "run-tests": [
+            "@putenv SYMFONY_DEPRECATIONS_HELPER=disabled",
+            "phpunit --bootstrap ./vendor/weitzman/drupal-test-traits/src/bootstrap-fast.php --testdox --configuration ./web/core tests"
+        ]
+    },
+    "scripts-descriptions": {
+        "run-tests": "Runs Drupal CMS's automated test suite."
     }
 }

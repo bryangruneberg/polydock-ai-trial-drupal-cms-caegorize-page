@@ -33,7 +33,7 @@ class BasicExpectationsTest extends ExistingSiteBase {
    * Tests basic expectations of a successful Drupal CMS install.
    */
   public function testBasicExpectations(): void {
-    $this->drupalGet('/');
+    $this->drupalGet('<front>');
 
     $assert_session = $this->assertSession();
     $assert_session->statusCodeEquals(200);
