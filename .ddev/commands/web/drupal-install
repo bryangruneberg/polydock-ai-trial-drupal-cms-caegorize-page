@@ -4,18 +4,7 @@
 ## Usage: drupal-install
 ## Example: "ddev drupal-install"
 
-if [ ! -f composer.json ]; then
-  # Copy the project template to the project root so we can make changes to it.
-  cp -f project_template/composer.json .
-
-  # Add the components as path repositories.
-  for path in $(find . -maxdepth 1 -type d -name 'drupal_cms*'); do
-    composer config repositories.$(basename $path) path $path
-  done
-fi
-
-# Require dependencies, and install Drupal CMS.
-composer require drupal/core-dev:^10 weitzman/drupal-test-traits
+# Install Drupal CMS.
 composer drupal:install
 
 # If we don't have `sendmail`, use the test mail collector.

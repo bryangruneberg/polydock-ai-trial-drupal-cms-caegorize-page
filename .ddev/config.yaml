@@ -261,8 +261,15 @@ corepack_enable: false
 # and you can't erase existing hooks or all environment variables.
 # However, with "override_config: true" in a particular config.*.yaml file,
 # 'use_dns_when_possible: false' can override the existing values, and
-# hooks:
-#   post-start: []
+hooks:
+  post-start:
+    # Add the components as globally available path repositories.
+    - exec: "find . -maxdepth 1 -type d -name 'drupal_cms*' -exec composer config --global repositories.{} path {} ';'"
+    # Symlink the template project's `composer.json` so any changes to it are reflected
+    # in version control.
+    - exec: 'ln -s -f ./project_template/composer.json'
+    # Install dependencies.
+    - composer: install
 # or
 # web_environment: []
 # or
