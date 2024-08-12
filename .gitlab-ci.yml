@@ -42,9 +42,7 @@ build project and run tests:
     - composer create-project drupal/drupal-cms-project $DDEV_APPROOT --stability dev
     - cd $DDEV_APPROOT
     # Install Drupal CMS.
-    - composer require --dev grasmash/yaml-cli
-    - yaml-cli update:value ./drush/drush.yml command.site.install.options.db-url mysql://drupaltestbot:drupaltestbotpw@database/drupal
-    - drush site:install --yes
+    - drush site:install --yes --db-url mysql://drupaltestbot:drupaltestbotpw@database/drupal
     # If sendmail is unavailable, ensure that we have a valid mail backend configured.
     - which sendmail || drush config:set --yes system.mail interface.default test_mail_collector
     # Start the web server.
