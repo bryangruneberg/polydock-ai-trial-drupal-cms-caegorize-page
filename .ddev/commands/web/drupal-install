@@ -4,9 +4,28 @@
 ## Usage: drupal-install
 ## Example: "ddev drupal-install"
 
-composer install
-drush site:install --yes --account-pass admin
-drush config:set --yes system.logging error_level verbose
-drush install --yes default_content
-drush user:password editor editor
-drush user:unblock editor
+if [ ! -f composer.json ]; then
+  # Copy the project template to the project root so we can make changes to it.
+  cp -f project_template/composer.json .
+
+  # Add the components as path repositories.
+  for path in $(find . -maxdepth 1 -type d -name 'drupal_cms*'); do
+    composer config repositories.$(basename $path) path $path
+  done
+fi
+
+# Require dependencies, and install Drupal CMS.
+composer require drupal/core-dev:^10 weitzman/drupal-test-traits
+composer drupal:install
+
+# If we don't have `sendmail`, use the test mail collector.
+which sendmail || drush config:set --yes system.mail interface.default test_mail_collector
+
+# Additional tweaks for development, if we're not running in CI.
+if [ -z "$CI" ]; then
+  composer require --dev drupal/default_content:^2@alpha
+  drush install --yes default_content
+  drush user:password editor editor
+  drush user:unblock editor
+  drush config:set --yes system.logging error_level verbose
+fi

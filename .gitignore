@@ -1,5 +1,8 @@
 /.phpunit.result.cache
+/composer.json
 /composer.lock
 /patches.lock.json
 /vendor
 /web
+/.editorconfig
+/.gitattributes

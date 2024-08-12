@@ -4,4 +4,12 @@
 ## Usage: run-tests
 ## Example: "ddev run-tests"
 
-DTT_BASE_URL=$DDEV_PRIMARY_URL composer run-tests
+# Disable deprecation notices because they can cause PHPUnit to exit with a non-zero
+# status, and there's often nothing we can do about them.
+export SYMFONY_DEPRECATIONS_HELPER=disabled
+
+# Point the tests to the DDEV project URL.
+export DTT_BASE_URL=$DDEV_PRIMARY_URL
+
+# Run the test suite.
+./vendor/bin/phpunit --bootstrap ./vendor/weitzman/drupal-test-traits/src/bootstrap-fast.php --configuration $DDEV_DOCROOT/core --testdox ./tests
