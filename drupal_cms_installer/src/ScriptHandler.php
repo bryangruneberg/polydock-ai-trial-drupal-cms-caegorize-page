@@ -21,7 +21,7 @@ final class ScriptHandler {
       return;
     }
     $data = [];
-    $db_url = getenv('DB');
+    $db_url = getenv('DB_URL');
 
     // If SQLite is available, use a SQLite database by default. Otherwise,
     // Drush will prompt for a database URL during installation.

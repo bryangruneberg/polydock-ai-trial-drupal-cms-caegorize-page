@@ -2,10 +2,14 @@ variables:
   # Keeping this low helps jobs find an available runner without waiting.
   # @see https://git.drupalcode.org/project/gitlab_templates/-/blob/main/includes/include.drupalci.main.yml?ref_type=heads
   KUBERNETES_CPU_REQUEST: 2
+  COMPOSER_NO_INTERACTION: 1
+  DB_URL: 'mysql://drupaltestbot:drupaltestbotpw@database/drupal'
 
 default:
   # New pushes can stop the current job and start a new one.
   interruptible: true
+  image:
+    name: 'drupalci/php-8.3-apache:production'
   retry:
     max: 2
     when:
@@ -14,21 +18,32 @@ default:
       - stuck_or_timeout_failure
       - runner_system_failure
       - scheduler_failure
-
-test:
-  stage: test
-  variables:
-    COMPOSER_NO_INTERACTION: 1
-    DTT_BASE_URL: 'http://localhost/$_WEB_ROOT'
-    _WEB_ROOT: web
-  image:
-    name: 'drupalci/php-8.3-apache:production'
   services:
     - name: drupalci/mysql-5.7:production
       alias: database
+
+build project:
+  stage: test
+  variables:
+    COMPOSER_MIRROR_PATH_REPOS: 1
+  script:
+    # Add the components as globally available path repositories, simulating Packagist.
+    - find $CI_PROJECT_DIR -type d -maxdepth 1 -name 'drupal_cms*' -exec composer config --global repositories.{} path {} ';'
+    # Add the project template as a globally available path repository, simulating Packagist.
+    - composer config --global repositories.template path $CI_PROJECT_DIR/project_template
+    # Create the project.
+    - composer create-project drupal/drupal-cms-project project --stability dev
+    # Actually install Drupal.
+    - composer drupal:install --working-dir project
+
+run tests:
+  stage: test
+  variables:
+    DTT_BASE_URL: 'http://localhost/$_WEB_ROOT'
+    _WEB_ROOT: web
   script:
     - composer install
-    - ./vendor/bin/drush site:install --yes --db-url mysql://drupaltestbot:drupaltestbotpw@database/drupal
+    - ./vendor/bin/drush site:install --yes --db-url $DB_URL
     - chown -R www-data:www-data $_WEB_ROOT
     - ln -s -f $CI_PROJECT_DIR/$_WEB_ROOT /var/www/html
     - service apache2 start
