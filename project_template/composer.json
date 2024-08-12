@@ -80,32 +80,16 @@
         }
     },
     "scripts": {
-        "drupal:install": [
-            "Composer\\Config::disableProcessTimeout",
-            "\\Drupal\\drupal_cms_installer\\ScriptHandler::configureDrush",
-            "drush site:install --yes --account-pass admin --config drush-install.yml",
-            "rm -f drush-install.yml",
-            "drush webform-libraries-download"
-        ],
         "drupal:run-server": [
             "Composer\\Config::disableProcessTimeout",
             "@php -d max_execution_time=0 web/core/scripts/drupal quick-start"
-        ],
-        "quick-start": [
-            "@drupal:install",
-            "test -n \"$CI\" || composer drupal:run-server"
         ]
     },
     "scripts-descriptions": {
-        "drupal:install": "Installs Drupal CMS.",
         "drupal:run-server": "Runs Drupal CMS using the PHP webserver and opens it in the default browser.",
         "quick-start": "Installs Drupal CMS and opens it in a browser."
     },
     "scripts-aliases": {
-        "drupal:install": [
-            "si",
-            "sin"
-        ],
         "drupal:run-server": [
             "rs",
             "serve"

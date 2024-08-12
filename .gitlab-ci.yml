@@ -25,8 +25,6 @@ build project and run tests:
   stage: test
   variables:
     COMPOSER_MIRROR_PATH_REPOS: 1
-    # @see \Drupal\drupal_cms_installer\ScriptHandler::configureDrush()
-    DB_URL: 'mysql://drupaltestbot:drupaltestbotpw@database/drupal'
     # We use the DDEV environment variable names for consistency, since DDEV is
     # the main development platform for Drupal CMS.
     # @see https://ddev.readthedocs.io/en/stable/users/extend/custom-commands/#environment-variables-provided
@@ -34,8 +32,8 @@ build project and run tests:
     DDEV_DOCROOT: web
     DDEV_PRIMARY_URL: 'http://localhost/$DDEV_DOCROOT'
   script:
-    # Add DDEV scripts to PATH for readability.
-    - export PATH=$CI_PROJECT_DIR/.ddev/commands/web:$PATH
+    # Add DDEV scripts, and vendor binaries, to PATH for readability.
+    - export PATH=$CI_PROJECT_DIR/.ddev/commands/web:$DDEV_APPROOT/vendor/bin:$PATH
     # Add the components as globally available path repositories, simulating Packagist.
     - find $CI_PROJECT_DIR -type d -maxdepth 1 -name 'drupal_cms*' -exec composer config --global repositories.{} path {} ';'
     # Add the project template as a globally available path repository, simulating Packagist.
@@ -44,7 +42,11 @@ build project and run tests:
     - composer create-project drupal/drupal-cms-project $DDEV_APPROOT --stability dev
     - cd $DDEV_APPROOT
     # Install Drupal CMS.
-    - drupal-install
+    - composer require --dev grasmash/yaml-cli
+    - yaml-cli update:value ./drush/drush.yml command.site.install.options.db-url mysql://drupaltestbot:drupaltestbotpw@database/drupal
+    - drush site:install --yes
+    # If sendmail is unavailable, ensure that we have a valid mail backend configured.
+    - which sendmail || drush config:set --yes system.mail interface.default test_mail_collector
     # Start the web server.
     - chown -R www-data:www-data $DDEV_DOCROOT
     - service apache2 start
