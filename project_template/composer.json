@@ -78,21 +78,5 @@
                 "  * Get involved with the Drupal community: https://drupal.org/getting-involved"
             ]
         }
-    },
-    "scripts": {
-        "drupal:run-server": [
-            "Composer\\Config::disableProcessTimeout",
-            "@php -d max_execution_time=0 web/core/scripts/drupal quick-start"
-        ]
-    },
-    "scripts-descriptions": {
-        "drupal:run-server": "Runs Drupal CMS using the PHP webserver and opens it in the default browser.",
-        "quick-start": "Installs Drupal CMS and opens it in a browser."
-    },
-    "scripts-aliases": {
-        "drupal:run-server": [
-            "rs",
-            "serve"
-        ]
     }
 }
