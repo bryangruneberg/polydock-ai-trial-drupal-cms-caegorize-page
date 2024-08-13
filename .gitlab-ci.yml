@@ -17,9 +17,6 @@ default:
       - stuck_or_timeout_failure
       - runner_system_failure
       - scheduler_failure
-  services:
-    - name: drupalci/mysql-5.7:production
-      alias: database
 
 build project and run tests:
   stage: test
@@ -41,8 +38,9 @@ build project and run tests:
     # Create the project.
     - composer create-project drupal/drupal-cms-project $DDEV_APPROOT --stability dev
     - cd $DDEV_APPROOT
-    # Install Drupal CMS.
-    - drush site:install --yes --db-url mysql://drupaltestbot:drupaltestbotpw@database/drupal
+    # Install Drupal CMS into a SQLite database, which is the only kind of database
+    # supported by the in-browser trial.
+    - drush site:install --yes --db-url sqlite://localhost/db.sqlite
     # If sendmail is unavailable, ensure that we have a valid mail backend configured.
     - which sendmail || drush config:set --yes system.mail interface.default test_mail_collector
     # Start the web server.
@@ -51,3 +49,9 @@ build project and run tests:
     # Run tests.
     - ln -s -f $CI_PROJECT_DIR/tests
     - run-tests
+  after_script:
+    - cp -R /var/www/html $CI_PROJECT_DIR
+    - rm -r -f html/.ddev html/tests
+  artifacts:
+    paths:
+      - html

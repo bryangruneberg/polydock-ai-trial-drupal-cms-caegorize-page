@@ -12,7 +12,8 @@ export SYMFONY_DEPRECATIONS_HELPER=disabled
 export DTT_BASE_URL=$DDEV_PRIMARY_URL
 
 # Set up the environment variables needed for isolated PHPUnit tests.
-export SIMPLETEST_DB=sqlite://localhost/db.sqlite
+DB_FILE=test.db
+export SIMPLETEST_DB=sqlite://localhost/$DB_FILE
 export SIMPLETEST_BASE_URL=$DDEV_PRIMARY_URL
 
 # Run the test suite.
@@ -20,6 +21,6 @@ export SIMPLETEST_BASE_URL=$DDEV_PRIMARY_URL
 
 STATUS=$?
 # Clean up.
-rm $DDEV_DOCROOT/db.sqlite
+rm $DDEV_DOCROOT/$DB_FILE
 
 exit $STATUS
