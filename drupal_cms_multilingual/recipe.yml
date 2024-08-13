@@ -32,6 +32,9 @@ config:
           value:
             untranslatable_fields_hide: '1'
     user.role.content_editor:
+      createIfNotExists:
+        id: content_editor
+        label: Content editor
       grantPermissions:
         - 'create content translations'
         - 'delete content translations'

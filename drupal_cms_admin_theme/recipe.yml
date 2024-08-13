@@ -7,7 +7,6 @@ install:
   - gin_toolbar
   - navigation
   - sam
-  - type_tray
 config:
   import:
     gin: '*'

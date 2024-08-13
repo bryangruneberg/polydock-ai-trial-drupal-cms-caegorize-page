@@ -2,6 +2,7 @@ name: 'Content type basics'
 type: Drupal CMS
 description: 'Provides basic infrastructure for meta tags and cloning of content.'
 install:
+  - language
   - metatag
   - metatag_open_graph
   - node

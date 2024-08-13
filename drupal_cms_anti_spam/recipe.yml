@@ -7,7 +7,8 @@ install:
   - user
 config:
   import:
-    user: '*'
+    user:
+      - user.role.authenticated
   actions:
     honeypot.settings:
       simple_config_update:

@@ -1,14 +1,7 @@
 langcode: en
 status: true
 dependencies: {  }
-third_party_settings:
-  type_tray:
-    type_category: _none
-    type_thumbnail: ''
-    type_icon: public://type-tray-icons/icon-blog-post.svg
-    type_description: ''
-    existing_nodes_link_text: ''
-    type_weight: 0
+third_party_settings: {  }
 name: 'Blog post'
 type: blog
 description: 'A simple blog post with an image, tags, and comments.'

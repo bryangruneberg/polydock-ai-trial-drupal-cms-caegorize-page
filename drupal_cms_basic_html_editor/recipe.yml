@@ -5,12 +5,14 @@ install:
   - ckeditor5
   - linkit
   - media_library
+  - node
   - user
 config:
   import:
     linkit:
       - image.style.linkit_result_thumbnail
-    user: '*'
+    user:
+      - user.role.authenticated
   actions:
     user.role.authenticated:
       grantPermission: 'use text format basic_html'

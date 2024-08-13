@@ -1,14 +1,7 @@
 langcode: en
 status: true
 dependencies: {  }
-third_party_settings:
-  type_tray:
-    type_category: _none
-    type_thumbnail: ''
-    type_icon: public://type-tray-icons/icon-event.svg
-    type_description: ''
-    existing_nodes_link_text: ''
-    type_weight: 0
+third_party_settings: {  }
 name: Event
 type: event
 description: "Use the event content type for creating and managing events, complete with details like date, time, location, and description."

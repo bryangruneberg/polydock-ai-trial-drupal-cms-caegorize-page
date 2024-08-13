@@ -5,6 +5,7 @@ install:
   - ckeditor5
   - linkit
   - media_library
+  - node
 config:
   import:
     linkit:

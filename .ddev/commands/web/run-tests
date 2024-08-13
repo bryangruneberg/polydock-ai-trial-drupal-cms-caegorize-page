@@ -11,5 +11,15 @@ export SYMFONY_DEPRECATIONS_HELPER=disabled
 # Point the tests to the DDEV project URL.
 export DTT_BASE_URL=$DDEV_PRIMARY_URL
 
+# Set up the environment variables needed for isolated PHPUnit tests.
+export SIMPLETEST_DB=sqlite://localhost/db.sqlite
+export SIMPLETEST_BASE_URL=$DDEV_PRIMARY_URL
+
 # Run the test suite.
-./vendor/bin/phpunit --bootstrap ./vendor/weitzman/drupal-test-traits/src/bootstrap-fast.php --configuration $DDEV_DOCROOT/core --testdox ./tests
+./vendor/bin/phpunit --bootstrap $PWD/vendor/weitzman/drupal-test-traits/src/bootstrap.php --configuration $DDEV_DOCROOT/core --testdox ./tests
+
+STATUS=$?
+# Clean up.
+rm $DDEV_DOCROOT/db.sqlite
+
+exit $STATUS
