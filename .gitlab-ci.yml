@@ -55,24 +55,27 @@ trial:
     - run tests
   script:
     - cd project
-    # Apply the necessary patches for Drupal to work in a WebAssembly runtime.
     - cp -R -v $CI_PROJECT_DIR/trial_assets/* .
+    # Apply the necessary patches for Drupal to work in a WebAssembly runtime.
     - composer patches-relock
     - composer patches-repatch
     # Minimize the size of the artifact by uninstalling dev dependencies and deleting
     # stuff we'll never need for the trial.
     - composer install --no-dev
     - find . -depth -type d -name tests -exec rm -r -f "{}" ';'
-    # Install Drupal CMS into a SQLite database, which is the only kind of database
-    # supported by the in-browser trial.
-    - vendor/bin/drush site:install --yes --db-url=sqlite://db.sqlite
+    # Install Drupal CMS.
+    - vendor/bin/drush site:install --yes
     # Use a test mail collector, since the trial won't have access to sendmail.
     - vendor/bin/drush config:set --yes system.mail interface.default test_mail_collector
     # Serve the installed project via the built-in PHP server to confirm that an HTTP
-    # request is successful.
-    - php -S 127.0.0.1:8080 -t $_WEB_ROOT &
+    # request is successful. The server's command-line output is silenced just to make
+    # the job log more readable.
+    - php -S 127.0.0.1:8080 -t $_WEB_ROOT 2>/dev/null &
     - sleep 3
     - curl --fail --location --silent -o /dev/null http://127.0.0.1:8080
+    # Clear the cache, so that the request we just did won't have any effect (i.e.,
+    # cache detritus) on the artifact.
+    - vendor/bin/drush cache:rebuild
     # Create the trial archive.
     - composer archive --dir=$CI_PROJECT_DIR --file=trial --format=zip
   artifacts:
