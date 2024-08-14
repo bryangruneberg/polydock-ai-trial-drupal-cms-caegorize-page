@@ -22,15 +22,12 @@ build project and run tests:
   stage: test
   variables:
     COMPOSER_MIRROR_PATH_REPOS: 1
-    # We use the DDEV environment variable names for consistency, since DDEV is
-    # the main development platform for Drupal CMS.
-    # @see https://ddev.readthedocs.io/en/stable/users/extend/custom-commands/#environment-variables-provided
     DDEV_APPROOT: /var/www/html
     DDEV_DOCROOT: web
-    DDEV_PRIMARY_URL: 'http://localhost/$DDEV_DOCROOT'
+    SIMPLETEST_DB: 'sqlite://localhost/db.sqlite'
   script:
-    # Add DDEV scripts, and vendor binaries, to PATH for readability.
-    - export PATH=$CI_PROJECT_DIR/.ddev/commands/web:$DDEV_APPROOT/vendor/bin:$PATH
+    # Add vendor binaries to PATH for readability.
+    - export PATH=$DDEV_APPROOT/vendor/bin:$PATH
     # Add the components as globally available path repositories, simulating Packagist.
     - find $CI_PROJECT_DIR -type d -maxdepth 1 -name 'drupal_cms*' -exec composer config --global repositories.{} path {} ';'
     # Add the project template as a globally available path repository, simulating Packagist.
@@ -40,18 +37,17 @@ build project and run tests:
     - cd $DDEV_APPROOT
     # Install Drupal CMS into a SQLite database, which is the only kind of database
     # supported by the in-browser trial.
-    - drush site:install --yes --db-url sqlite://localhost/db.sqlite
+    - drush site:install --yes --db-url $SIMPLETEST_DB
     # If sendmail is unavailable, ensure that we have a valid mail backend configured.
     - which sendmail || drush config:set --yes system.mail interface.default test_mail_collector
-    # Start the web server.
+    # Start the web server and run tests.
     - chown -R www-data:www-data $DDEV_DOCROOT
     - service apache2 start
-    # Run tests.
-    - ln -s -f $CI_PROJECT_DIR/tests
-    - run-tests
+    - cd $DDEV_DOCROOT
+    - sudo SYMFONY_DEPRECATIONS_HELPER=weak SIMPLETEST_DB=$SIMPLETEST_DB SIMPLETEST_BASE_URL=http://localhost/$DDEV_DOCROOT -u www-data ../vendor/bin/phpunit --configuration core --testdox recipes
   after_script:
     - cp -R /var/www/html $CI_PROJECT_DIR
-    - rm -r -f html/.ddev html/tests
+    - rm -r -f html/.ddev
   artifacts:
     paths:
       - html

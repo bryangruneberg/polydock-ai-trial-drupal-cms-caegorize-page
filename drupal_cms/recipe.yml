@@ -11,8 +11,6 @@ recipes:
   - drupal_cms_admin_theme
   - core/recipes/core_recommended_front_end_theme
   - core/recipes/user_picture
-  # Provides a fallback text format which is available to all users.
-  - core/recipes/restricted_html_format
   # Not in Standard...
   - core/recipes/audio_media_type
   - core/recipes/document_media_type

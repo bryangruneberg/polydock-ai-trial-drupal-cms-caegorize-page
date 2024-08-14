@@ -1,6 +1,9 @@
 name: 'Content type basics'
 type: Drupal CMS
 description: 'Provides basic infrastructure for meta tags and cloning of content.'
+recipes:
+  # Ensure there is at least one text format to use.
+  - core/recipes/restricted_html_format
 install:
   - language
   - metatag

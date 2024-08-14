@@ -25,8 +25,7 @@
         "drush/drush": "^12.5"
     },
     "require-dev": {
-        "drupal/core-dev": "^10.3",
-        "weitzman/drupal-test-traits": "^2.3"
+        "drupal/core-dev": "^10.3"
     },
     "conflict": {
         "drupal/drupal": "*"

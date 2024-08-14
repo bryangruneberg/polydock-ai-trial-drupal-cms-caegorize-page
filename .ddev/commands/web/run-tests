@@ -8,19 +8,8 @@
 # status, and there's often nothing we can do about them.
 export SYMFONY_DEPRECATIONS_HELPER=disabled
 
-# Point the tests to the DDEV project URL.
-export DTT_BASE_URL=$DDEV_PRIMARY_URL
-
 # Set up the environment variables needed for isolated PHPUnit tests.
-DB_FILE=test.db
-export SIMPLETEST_DB=sqlite://localhost/$DB_FILE
 export SIMPLETEST_BASE_URL=$DDEV_PRIMARY_URL
 
 # Run the test suite.
-./vendor/bin/phpunit --bootstrap $PWD/vendor/weitzman/drupal-test-traits/src/bootstrap.php --configuration $DDEV_DOCROOT/core --testdox ./tests
-
-STATUS=$?
-# Clean up.
-rm $DDEV_DOCROOT/$DB_FILE
-
-exit $STATUS
+cd $DDEV_DOCROOT && phpunit --testdox --configuration core recipes
