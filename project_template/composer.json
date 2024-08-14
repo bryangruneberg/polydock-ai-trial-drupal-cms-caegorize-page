@@ -77,5 +77,10 @@
                 "  * Get involved with the Drupal community: https://drupal.org/getting-involved"
             ]
         }
+    },
+    "scripts": {
+        "quick-start": [
+            "@php ./web/core/scripts/drupal quick-start drupal_cms_installer"
+        ]
     }
 }
