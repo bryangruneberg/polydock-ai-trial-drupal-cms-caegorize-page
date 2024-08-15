@@ -81,5 +81,5 @@ trial:
   artifacts:
     paths:
       - trial.zip
-    expire_in: 30 days
+    expire_in: 1 day
     public: true
