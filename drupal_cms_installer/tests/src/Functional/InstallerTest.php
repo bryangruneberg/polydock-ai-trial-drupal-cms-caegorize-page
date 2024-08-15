@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Drupal\Tests\drupal_cms\Functional;
+namespace Drupal\Tests\drupal_cms_installer\Functional;
 
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Extension\ExtensionList;
@@ -11,7 +11,7 @@ use Drupal\Core\Extension\ThemeExtensionList;
 use Drupal\FunctionalTests\Installer\InstallerTestBase;
 
 /**
- * @group drupal_cms
+ * @group drupal_cms_installer
  */
 class InstallerTest extends InstallerTestBase {
 

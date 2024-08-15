@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Drupal\Tests\drupal_cms\Kernel;
+namespace Drupal\Tests\drupal_cms_multilingual\Kernel;
 
 use Composer\InstalledVersions;
 use Drupal\Core\Extension\ThemeInstallerInterface;
@@ -12,7 +12,7 @@ use Drupal\KernelTests\KernelTestBase;
 use Drupal\Tests\user\Traits\UserCreationTrait;
 
 /**
- * @group drupal_cms
+ * @group drupal_cms_multilingual
  */
 class ComponentValidationTest extends KernelTestBase {
 
@@ -47,7 +47,7 @@ class ComponentValidationTest extends KernelTestBase {
   }
 
   public function test(): void {
-    $dir = InstalledVersions::getInstallPath('drupal/drupal_cms');
+    $dir = InstalledVersions::getInstallPath('drupal/drupal_cms_multilingual');
 
     // If the recipe is not valid, an exception should be thrown here.
     $recipe = Recipe::createFromDirectory($dir);

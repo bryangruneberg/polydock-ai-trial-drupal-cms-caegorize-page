@@ -3,6 +3,7 @@ variables:
   # @see https://git.drupalcode.org/project/gitlab_templates/-/blob/main/includes/include.drupalci.main.yml?ref_type=heads
   KUBERNETES_CPU_REQUEST: 2
   COMPOSER_NO_INTERACTION: 1
+  _PROJECT_ROOT: $CI_PROJECT_DIR/project
   _WEB_ROOT: web
 
 default:
@@ -29,7 +30,7 @@ build project:
     # Add the project template as a globally available path repository, simulating Packagist.
     - composer config --global repositories.template path $CI_PROJECT_DIR/project_template
     # Create the project.
-    - composer create-project drupal/drupal-cms-project project --stability=dev
+    - composer create-project drupal/drupal-cms-project $_PROJECT_ROOT --stability=dev
   artifacts:
     paths:
       - project
@@ -38,15 +39,14 @@ run tests:
   stage: test
   needs:
     - build project
-  variables:
-    _PROJECT_ROOT: $CI_PROJECT_DIR/project
   script:
     - service apache2 start
     - cd /var/www/html
     - ln -s -f $_PROJECT_ROOT/$_WEB_ROOT
     - cd $_WEB_ROOT
     - chown -R www-data:www-data .
-    - sudo SYMFONY_DEPRECATIONS_HELPER=disabled SIMPLETEST_DB=sqlite://localhost/db.sqlite SIMPLETEST_BASE_URL=http://localhost/$_WEB_ROOT -u www-data $_PROJECT_ROOT/vendor/bin/phpunit --configuration core --testdox recipes
+    - cp $CI_PROJECT_DIR/phpunit.xml .
+    - sudo SIMPLETEST_BASE_URL=http://localhost/$_WEB_ROOT -u www-data $_PROJECT_ROOT/vendor/bin/phpunit
 
 trial:
   stage: deploy
