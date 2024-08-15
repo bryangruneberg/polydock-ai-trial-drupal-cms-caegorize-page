@@ -47,7 +47,7 @@ class ComponentValidationTest extends KernelTestBase {
   }
 
   public function test(): void {
-    $dir = InstalledVersions::getInstallPath('drupal/drupal_cms');
+    $dir = InstalledVersions::getInstallPath('drupal/' . explode('\\', __NAMESPACE__)[2]);
 
     // If the recipe is not valid, an exception should be thrown here.
     $recipe = Recipe::createFromDirectory($dir);
