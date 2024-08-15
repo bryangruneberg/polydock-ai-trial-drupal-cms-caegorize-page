@@ -265,7 +265,7 @@ corepack_enable: false
 hooks:
   post-start:
     # Add the components as globally available path repositories.
-    - exec: "refresh_repositories"
+    - exec: "refresh-components"
     # Symlink the template project's `composer.json` so any changes to it are reflected
     # in version control.
     - exec: 'ln -s -f ./project_template/composer.json'
