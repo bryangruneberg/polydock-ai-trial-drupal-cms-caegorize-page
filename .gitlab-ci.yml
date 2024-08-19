@@ -51,9 +51,6 @@ run tests:
 
 run trial tests:
   stage: test
-  only:
-    changes:
-      - trial/**/*
   script:
     - cd trial
     - npm ci
