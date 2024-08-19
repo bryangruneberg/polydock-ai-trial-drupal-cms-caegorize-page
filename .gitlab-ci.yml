@@ -49,14 +49,24 @@ run tests:
     - cp $CI_PROJECT_DIR/phpunit.xml .
     - sudo SIMPLETEST_BASE_URL=http://localhost/$_WEB_ROOT -u www-data $_PROJECT_ROOT/vendor/bin/phpunit
 
-trial:
+run trial tests:
+  stage: test
+  only:
+    changes:
+      - trial/**/*
+  script:
+    - cd trial
+    - npm ci
+    - npm run test
+
+build trial artifact:
   stage: deploy
   needs:
     - build project
     - run tests
   script:
     - cd project
-    - cp -R -v $CI_PROJECT_DIR/trial_assets/* .
+    - cp -R -v $CI_PROJECT_DIR/trial/artifact_assets/* .
     # Apply the necessary patches for Drupal to work in a WebAssembly runtime.
     - composer patches-relock
     - composer patches-repatch
@@ -68,6 +78,11 @@ trial:
     - vendor/bin/drush site:install --yes
     # Use a test mail collector, since the trial won't have access to sendmail.
     - vendor/bin/drush config:set --yes system.mail interface.default test_mail_collector
+    # Disable CSS/JS aggregation.
+    - vendor/bin/drush config:set --yes --input-format=yaml system.performance css.preprocess false
+    - vendor/bin/drush config:set --yes --input-format=yaml system.performance js.preprocess false
+    # Enable verbose logging.
+    - vendor/bin/drush config:set --yes system.logging error_level verbose
     # Serve the installed project via the built-in PHP server to confirm that an HTTP
     # request is successful. The server's command-line output is silenced just to make
     # the job log more readable.
@@ -84,3 +99,24 @@ trial:
       - trial.zip
     expire_in: 1 day
     public: true
+
+# Build trial. This job name is pre-defined by GitLab, it has to be "pages".
+pages:
+  stage: deploy
+  needs:
+    - 'run trial tests'
+    - 'build trial artifact'
+  artifacts:
+    paths:
+      - trial/public
+  rules:
+    # Only deploy to pages if we're on the default branch, on a push, and not a fork.
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_PIPELINE_SOURCE == "push" && $CI_PROJECT_ROOT_NAMESPACE == "project"
+      changes:
+        - trial/**/*
+        - gitlab-ci.yml
+  script:
+    - cd trial
+    - npm ci
+    - npm run build
+    - echo "Trial experience was deployed at ${CI_PAGES_URL}"
