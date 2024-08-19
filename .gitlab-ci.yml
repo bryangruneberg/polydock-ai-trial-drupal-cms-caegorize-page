@@ -117,3 +117,4 @@ pages:
     - npm ci
     - npm run build
     - echo "Trial experience was deployed at ${CI_PAGES_URL}"
+  publish: trial/public
