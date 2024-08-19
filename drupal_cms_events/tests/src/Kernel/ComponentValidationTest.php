@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Drupal\Tests\drupal_cms_event_content_type\Kernel;
+namespace Drupal\Tests\drupal_cms_events\Kernel;
 
 use Composer\InstalledVersions;
 use Drupal\Core\Extension\ThemeInstallerInterface;
@@ -12,7 +12,7 @@ use Drupal\KernelTests\KernelTestBase;
 use Drupal\Tests\user\Traits\UserCreationTrait;
 
 /**
- * @group drupal_cms_event_content_type
+ * @group drupal_cms_events
  */
 class ComponentValidationTest extends KernelTestBase {
 

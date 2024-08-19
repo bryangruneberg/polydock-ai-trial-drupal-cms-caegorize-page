@@ -3,18 +3,14 @@ status: true
 dependencies:
   module:
     - node
-  enforced:
-    config:
-      - node.type.event
 id: events
 label: Events
 type: 'canonical_entities:node'
-pattern: '/event/[node:field_date_time:value-custom:Y]/[node:title]'
+pattern: '/events/[node:title]'
 selection_criteria:
-  79517ec7-284f-47ac-bc09-a26616c74ace:
+  177cfc00-f45f-4166-a3e7-0e9a94ac539c:
     id: 'entity_bundle:node'
     negate: false
-    uuid: 79517ec7-284f-47ac-bc09-a26616c74ace
     context_mapping:
       node: node
     bundles:

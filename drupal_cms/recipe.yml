@@ -18,7 +18,7 @@ recipes:
   - core/recipes/remote_video_media_type
   - drupal_cms_blog
   - drupal_cms_basic_html_editor
-  - drupal_cms_event_content_type
+  - drupal_cms_events
   - drupal_cms_forms
   - drupal_cms_full_html_editor
   - drupal_cms_image_media_type
