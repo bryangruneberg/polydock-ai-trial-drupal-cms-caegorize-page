@@ -1,4 +1,8 @@
 import { PhpCgiWorker } from "./PhpCgiWorker.mjs";
+import {getBroadcastChannel} from "./utils.mjs";
+import CookieMap from "./cookie-map.mjs";
+
+const cookies = new CookieMap;
 
 const onRequest = (request, response) => {
     const url = new URL(request.url);
@@ -46,6 +50,7 @@ export class DrupalCgiWorker extends PhpCgiWorker {
                 svg: "image/svg+xml",
                 ...types
             },
+            cookies,
             ...args,
         });
     }
@@ -98,23 +103,4 @@ export function setUpWorker(worker, prefix, docroot) {
     worker.addEventListener('message',  event => php.handleMessageEvent(event));
 
     return php
-}
-
-export function registerWorker(moduleUrl, bundledUrl) {
-    const serviceWorker = navigator.serviceWorker;
-    serviceWorker.register(moduleUrl, {
-        type: "module"
-    })
-        .catch(() => {
-            console.log('Browser did not support ES modules in service worker, trying bundled service worker')
-            serviceWorker.register(bundledUrl)
-                .catch(error => {
-                    alert("There was an error loading the service worker. Check known compatibility issues and your browser's developer console.")
-                    console.error(error)
-                });
-        });
-}
-
-export function getBroadcastChannel() {
-    return new BroadcastChannel('drupal-cgi-worker');
 }

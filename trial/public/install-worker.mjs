@@ -1,5 +1,5 @@
 import { PhpWorker } from './PhpWorker.mjs'
-import { getBroadcastChannel } from "./drupal-cgi-worker.mjs";
+import { getBroadcastChannel } from "./utils.mjs";
 
 const sharedLibs = [
     `php${PhpWorker.phpVersion}-zip.so`,
@@ -14,7 +14,7 @@ const sharedLibs = [
     `php${PhpWorker.phpVersion}-simplexml.so`,
 ];
 
-onmessage = async ({data }) => {
+self.onmessage = async ({data }) => {
     const { action, params } = data;
 
     console.log('booting PhpWorker')
