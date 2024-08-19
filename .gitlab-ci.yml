@@ -80,6 +80,8 @@ build trial artifact:
     - vendor/bin/drush config:set --yes --input-format=yaml system.performance js.preprocess false
     # Enable verbose logging.
     - vendor/bin/drush config:set --yes system.logging error_level verbose
+    # Fibers are not supported in Wasm, which Big Pipe leverages.
+    - vendor/bin/drush pm:uninstall --yes big_pipe
     # Serve the installed project via the built-in PHP server to confirm that an HTTP
     # request is successful. The server's command-line output is silenced just to make
     # the job log more readable.
