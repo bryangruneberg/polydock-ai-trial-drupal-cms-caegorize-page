@@ -1,6 +1,8 @@
 name: 'Events'
 description: 'A content type and view to help you manage events.'
 type: 'Drupal CMS'
+recipes:
+  - drupal_cms_locations
 install:
   # Core
   - node
@@ -28,7 +30,7 @@ config:
         - name: body
           options:
             type: text_textarea_with_summary
-            weight: 8
+            weight: 9
             region: content
         - name: created
           options:
@@ -39,6 +41,16 @@ config:
           options:
             type: smartdate_inline
             weight: 7
+            region: content
+        - name: field_where
+          options:
+            type: entity_reference_autocomplete
+            settings:
+              match_operator: CONTAINS
+              match_limit: 10
+              size: 60
+              placeholder: 'Choose an existing location'
+            weight: 8
             region: content
         - name: path
           options:
@@ -89,6 +101,15 @@ config:
             label: above
             weight: 1
             region: content
+        - name: field_where
+          options:
+            type: entity_reference_entity_view
+            label: above
+            settings:
+              view_mode: teaser
+              link: false
+            weight: 2
+            region: content
         - name: links
           options:
             weight: 100
@@ -110,11 +131,19 @@ config:
             label: hidden
             settings:
               trim_length: 600
-            weight: 1
+            weight: 2
             region: content
         - name: field_when
           options:
             type: smartdate_default
             label: inline
             weight: 0
+            region: content
+        - name: field_where
+          options:
+            type: entity_reference_label
+            label: inline
+            settings:
+              link: true
+            weight: 1
             region: content
