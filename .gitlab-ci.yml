@@ -107,7 +107,6 @@ pages:
   stage: deploy
   needs:
     - 'run trial tests'
-    - 'build trial artifact'
   artifacts:
     paths:
       - trial/public
