@@ -15,7 +15,8 @@
                 "#3303127: Determine which core config entity methods should be config actions": "https://www.drupal.org/files/issues/2024-08-09/core-7940.patch",
                 "Ensure core recipes that affect user roles also install the User module": "https://www.drupal.org/files/issues/2024-08-09/core-recipes-user-import.patch",
                 "#3416357: Convert QueueFactory to use a service locator": "https://www.drupal.org/files/issues/2024-08-09/3416357-10.3.x-only.patch",
-                "Allow the command-line installer to auto-select distributions": "https://www.drupal.org/files/issues/2024-08-12/core-install-command-allow-distributions.patch"
+                "Allow the command-line installer to auto-select distributions": "https://www.drupal.org/files/issues/2024-08-12/core-install-command-allow-distributions.patch",
+                "#3467262: Create menu item parent for a default tab": "https://www.drupal.org/files/issues/2024-08-23/core-default_tab_parent_menu-3467262-6.patch"
             }
         }
     }
