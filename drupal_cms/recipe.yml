@@ -3,7 +3,6 @@ description: Applies all the basic Drupal CMS recipes.
 type: Site
 recipes:
   - core/recipes/basic_block_type
-  - core/recipes/content_search
   - core/recipes/core_recommended_performance
   # Put drupal_cms_admin_theme before core_recommended_front_end_theme to
   # prevent blocks from the front-end theme being copied into the admin
@@ -49,8 +48,6 @@ install:
   - views_ui
 config:
   import:
-    help:
-      - search.page.help_search
     image:
       - image.style.large
       - image.style.thumbnail
@@ -64,14 +61,11 @@ config:
     olivero:
       - block.block.olivero_breadcrumbs
       - block.block.olivero_help
-      - block.block.olivero_search_form_narrow
-      - block.block.olivero_search_form_wide
       - block.block.olivero_syndicate
     shortcut:
       - shortcut.set.default
     user:
       - core.entity_view_mode.user.compact
-      - search.page.user_search
       - views.view.user_admin_people
       - views.view.who_s_new
       - views.view.who_s_online
@@ -126,13 +120,11 @@ config:
         - 'access shortcuts'
         - 'access user profiles'
         - 'delete own files'
-        - 'use advanced search'
         - 'view own unpublished content'
     user.role.anonymous:
       grantPermissions:
-        # We assume all published content should be accessible and searchable.
+        # We assume all published content should be accessible/
         - 'access content'
-        - 'use advanced search'
     user.settings:
       simple_config_update:
         verify_mail: true
