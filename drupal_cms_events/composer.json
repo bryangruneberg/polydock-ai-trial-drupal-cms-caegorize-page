@@ -7,6 +7,7 @@
     "drupal/drupal_cms_locations": "*",
     "drupal/add_content_by_bundle": "^1.2",
     "drupal/smart_date": "^4.1",
+    "drupal/addtocal_augment": "^1.2@rc",
     "drupal/pathauto": "^1.13"
   }
 }

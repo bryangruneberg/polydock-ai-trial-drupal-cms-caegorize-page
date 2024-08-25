@@ -10,6 +10,8 @@ install:
   # Contrib
   - add_content_by_bundle
   - smart_date
+  - date_augmenter
+  - addtocal_augment
   - pathauto
 config:
   import:
@@ -99,6 +101,29 @@ config:
           options:
             type: smartdate_default
             label: above
+            third_party_settings:
+              date_augmenter:
+                instances:
+                  status:
+                    addtocal: '1'
+                  weights:
+                    order:
+                      addtocal:
+                        weight: '0'
+                  settings:
+                    addtocal:
+                      label: 'Add to calendar'
+                      event_title: ''
+                      location: ''
+                      description: ''
+                      icons: '1'
+                      max_desc: '60'
+                      ellipsis: '1'
+                      target: ''
+                      retain_spacing: 0
+                      past_events: 0
+                  augmenter_settings:
+                    fields__field_when__settings_edit_form__third_party_settings__date_augmenter__augmenter_settings__active_tab: ''
             weight: 1
             region: content
         - name: field_where
