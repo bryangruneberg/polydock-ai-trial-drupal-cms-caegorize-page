@@ -1,0 +1,105 @@
+Drupal CMS is built and maintained by the Drupal project community. Everyone is
+encouraged to submit issues and changes (merge requests) to improve the product.
+
+
+Leadership Team
+---------------
+
+Product Lead
+- Dries Buytaert 'Dries' https://www.drupal.org/u/Dries
+
+Technical Lead
+- Tim Plunkett 'tim.plunkett' https://www.drupal.org/u/tim.plunkett (Acquia)
+
+User Experience Lead
+- Cristina Chumillas 'ckrina' https://www.drupal.org/u/ckrina (Lullabot)
+
+Product Owner
+- Pamela Barone 'pameeela' https://www.drupal.org/u/pameeela (Technocrat)
+
+Contribution Coordinator
+- Gábor Hojtsy 'Gábor Hojtsy' https://www.drupal.org/u/gábor-hojtsy (Acquia)
+
+
+Advisory Council
+----------------
+
+To support the leadership team, we established the Drupal Starshot Advisory
+Council, an advisory council that includes:
+
+- Three end-users (site builders)
+- Three Certified Drupal Partners
+- Two Drupal Core Committers (one framework manager and one release manager)
+- Three Drupal Association board members, one from each of the following Board
+  Working Groups: Innovation, Marketing, and Fundraising
+- Two staff members from the Drupal Association
+
+The advisory council members are:
+
+- Imre Gmelig Meijling, React Online / Drupal Association Board - Fundraising
+  Committee
+- Suzanne Dergacheva, Evolving Web / Drupal Association Board - Marketing
+  Committee
+- Mike Herchel, Agileana / Drupal Association Board - Innovation Committee
+- Tim Doyle, CEO at the Drupal Association
+- Tim Lehnen, CTO at the Drupal Association
+- Kristen Pol, Salsa Digital - Drupal Certified Partner representative
+- Chris Yates, Pantheon - Drupal Certified Partner representative
+- Luis Ribeiro, CI&T - Drupal Certified Partner representative
+- Kathryn Carruthers, alakasam - End User representative
+- Emma Horrell, University of Edinburgh - End User representative
+- Jim Birch, Kanopi Studios - End User representative
+- Nathaniel Catchpole (catch), Third and Grove / Tag1 Consulting - Drupal Core -
+  Committer
+- Théodore Biadala (nod_), Très Bien Tech - Drupal Core Committer
+
+
+Track Leads
+-----------
+
+Accessibility tools
+- Gareth Alexander 'the_g_bomb' https://www.drupal.org/u/the_g_bomb (Zoocha)
+
+Advanced search
+- Baddy Sonja 'baddysonja' https://www.drupal.org/u/baddysonja (1xINTERNET)
+
+AI
+- Jamie Abrahams 'yautja_cetanu' https://www.drupal.org/u/yautja_cetanu
+  (FreelyGive)
+
+Analytics
+- Dharizza Espinach 'dharizza' https://www.drupal.org/u/dharizza (Evolving Web)
+
+Blog
+- Laurens Van Damme 'L_VanDamme' https://www.drupal.org/u/L_VanDamme (Dropsolid)
+
+Dashboard
+- Christian López Espínola 'penyaskito' https://www.drupal.org/u/penyaskito
+  (Lullabot)
+- Matthew Tift 'mtift' https://www.drupal.org/u/mtift (Lullabot)
+
+Event management
+- Martin Anderson-Clutz 'mandclu' https://www.drupal.org/u/mandclu (Acquia)
+
+Installer
+- Tim Plunkett 'tim.plunkett' https://www.drupal.org/u/tim.plunkett (Acquia)
+
+Media management
+- Tony Barker 'tonypaulbarker' https://www.drupal.org/u/tonypaulbarker
+  (Annertech)
+
+Multilingual content
+- Pavlos Daniel 'pavlosdan' https://www.drupal.org/u/pavlosdan (Acquia)
+
+Privacy
+- Jürgen Haas 'jurgenhaas' https://www.drupal.org/u/jurgenhaas (LakeDrops)
+
+Product marketing
+- Suzanne Dergacheva 'pixelite' https://www.drupal.org/u/pixelite (Evolving Web)
+
+Sitewide SEO
+- Jim Birch 'thejimbirch' https://www.drupal.org/u/thejimbirch (Kanopi Studios)
+- John Doyle '_doyle_' https://www.drupal.org/u/_doyle_ (Digital Polygon)
+
+Trial Experience
+- Matt Glaman 'mglaman' https://www.drupal.org/u/mglaman (Acquia)
