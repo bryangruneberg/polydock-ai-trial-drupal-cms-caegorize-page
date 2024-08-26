@@ -21,6 +21,13 @@ Contribution Coordinator
 - Gábor Hojtsy 'Gábor Hojtsy' https://www.drupal.org/u/gábor-hojtsy (Acquia)
 
 
+Committers
+----------
+
+- Adam Globus-Hoenich 'phenaproxima' https://www.drupal.org/u/phenaproxima
+- Tim Plunkett 'tim.plunkett' https://www.drupal.org/u/tim.plunkett
+
+
 Advisory Council
 ----------------
 
