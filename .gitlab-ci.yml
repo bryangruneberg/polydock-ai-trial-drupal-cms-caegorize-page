@@ -82,9 +82,6 @@ build trial artifact:
     - vendor/bin/drush config:set --yes system.logging error_level verbose
     # Fibers are not supported in Wasm, which Big Pipe leverages.
     - vendor/bin/drush pm:uninstall --yes big_pipe
-    # Redirect is causing most forms to throw too many redirects in Wasm
-    # @todo find out why and remove in https://www.drupal.org/project/drupal_cms/issues/3468968
-    - vendor/bin/drush pm:uninstall --yes redirect
     # Serve the installed project via the built-in PHP server to confirm that an HTTP
     # request is successful. The server's command-line output is silenced just to make
     # the job log more readable.
