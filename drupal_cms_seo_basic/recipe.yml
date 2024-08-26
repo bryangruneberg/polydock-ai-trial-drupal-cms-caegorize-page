@@ -1,0 +1,42 @@
+name: Basic SEO
+description: Configures Drupal CMS for basic SEO best practices.
+type: Drupal CMS
+recipes:
+  - core/recipes/content_editor_role
+install:
+  - easy_breadcrumb
+  - hreflang
+  - pathauto
+  - redirect
+  - redirect_404
+  - token
+  - user
+  - views
+config:
+  import:
+    pathauto: '*'
+    redirect:
+    # Excludes optional language config: language.content_settings.redirect.redirect.yml.
+    # If Drupal CMS is going to have translation on by default, change this to import all of redirect's config.
+      - system.action.redirect_delete_action
+      - views.view.redirect
+    redirect_404: '*'
+  actions:
+    easy_breadcrumb.settings:
+      simpleConfigUpdate:
+        # Add Schema.org Breadcrumb markup.
+        add_structured_data_json_ld: true
+        # Remove breadcrumbs when only home appears.
+        # Since we print the page title in the crumb, this is only applies to the home page.
+        hide_single_home_item: true
+    system.performance:
+      simpleConfigUpdate:
+        # Ensure caching is on and set to 15 minutes for Lighthouse.
+        cache.page.max_age: 900
+        # Ensure CSS and JS are preprocessed.
+        css.preprocess: true
+        js.preprocess: true
+    user.role.content_editor:
+      grantPermissions:
+        # Allow access to the redirect views.
+        - 'administer redirects'

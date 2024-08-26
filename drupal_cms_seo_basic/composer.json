@@ -1,0 +1,14 @@
+{
+    "name": "drupal/drupal_cms_seo_basic",
+    "type": "drupal-recipe",
+    "description": "Configures Drupal CMS for basic SEO best practices.",
+    "version": "dev-main",
+    "require": {
+        "drupal/core": ">=10.3",
+        "drupal/easy_breadcrumb": "^2",
+        "drupal/hreflang": "^1.14",
+        "drupal/pathauto": "^1.12",
+        "drupal/redirect": "^1.10",
+        "drupal/token": "^1.15"
+    }
+}

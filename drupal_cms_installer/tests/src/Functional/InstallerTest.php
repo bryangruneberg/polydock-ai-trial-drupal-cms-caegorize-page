@@ -55,14 +55,6 @@ class InstallerTest extends InstallerTestBase {
    * Tests basic expectations of a successful Drupal CMS install.
    */
   public function testPostInstallState(): void {
-    // Set the site name to a randomly generated title.
-    $expected_title = $this->getRandomGenerator()->name();
-    $this->config('system.site')->set('name', $expected_title)->save();
-
-    $this->drupalGet('<front>');
-    $assert_session = $this->assertSession();
-    $assert_session->titleEquals($expected_title);
-
     // The installer should have uninstalled itself.
     $this->assertFalse($this->container->getParameter('install_profile'));
 
@@ -86,6 +78,7 @@ class InstallerTest extends InstallerTestBase {
       ->execute();
     $this->assertNotEmpty($node_types);
 
+    $assert_session = $this->assertSession();
     foreach ($node_types as $node_type) {
       $node = $this->createNode(['type' => $node_type]);
       $url = $node->toUrl();

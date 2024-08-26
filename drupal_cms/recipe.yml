@@ -24,14 +24,12 @@ recipes:
   - drupal_cms_maintenance
   - drupal_cms_media_tools
   - drupal_cms_page_content_type
+  - drupal_cms_seo_basic
   - drupal_cms_workflows
 install:
-  - easy_breadcrumb
   - eca_ui
   - login_emailusername
-  - metatag
   - menu_link_content
-  - redirect
   # The rest of these are in Standard.
   - help
   - history
@@ -51,7 +49,6 @@ config:
     image:
       - image.style.large
       - image.style.thumbnail
-    metatag: '*'
     node:
       - views.view.archive
       - views.view.content
@@ -130,10 +127,3 @@ config:
         verify_mail: true
         register: admin_only
         cancel_method: user_cancel_block
-    easy_breadcrumb.settings:
-      simple_config_update:
-        # Add Schema.org Breadcrumb markup.
-        add_structured_data_json_ld: true
-        # Remove breadcrumbs when only home appears.
-        # Since we print the page title, this is only the home page.
-        hide_single_home_item: true

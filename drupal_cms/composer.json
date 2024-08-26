@@ -5,11 +5,8 @@
     "version": "dev-main",
     "require": {
         "drupal/core": ">=10.3",
-        "drupal/easy_breadcrumb": "^2",
         "drupal/eca": "^2",
         "drupal/login_emailusername": "^2.1",
-        "drupal/metatag": "^2",
-        "drupal/redirect": "^1.9",
         "drupal/drupal_cms_admin_theme": "*",
         "drupal/drupal_cms_blog": "*",
         "drupal/drupal_cms_basic_html_editor": "*",
@@ -23,6 +20,7 @@
         "drupal/drupal_cms_multilingual": "*",
         "drupal/drupal_cms_page_content_type": "*",
         "drupal/drupal_cms_patches": "*",
+        "drupal/drupal_cms_seo_basic": "*",
         "drupal/drupal_cms_workflows": "*"
     }
 }
