@@ -7,7 +7,10 @@ use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Recipe\InputCollector;
 use Drupal\Core\Recipe\Recipe;
 use Drupal\Core\Recipe\RecipeRunner;
+use Drupal\drupal_cms_installer\Form\AccountForm;
 use Drupal\drupal_cms_installer\Form\RecipesForm;
+use Drupal\drupal_cms_installer\Form\SiteNameForm;
+use Drupal\user\Entity\User;
 use Symfony\Component\Process\ExecutableFinder;
 
 /**
@@ -15,6 +18,26 @@ use Symfony\Component\Process\ExecutableFinder;
  */
 function drupal_cms_installer_install_tasks(): array {
   return [
+    'drupal_cms_installer_site_name_form' => [
+      'display' => FALSE,
+      'type' => 'form',
+      'function' => SiteNameForm::class,
+    ],
+    'drupal_cms_installer_account_form' => [
+      'display' => FALSE,
+      'type' => 'form',
+      'function' => AccountForm::class,
+    ],
+    'drupal_cms_installer_set_site_mail' => [
+      // Sets the site-wide email address to a no-reply.
+    ],
+    'drupal_cms_installer_set_time_zone' => [
+      // Sets the default time zone to UTC.
+    ],
+    'drupal_cms_installer_install_update_status' => [
+      // Install the Update Status module and configure user 1 to receive
+      // email notifications from it.
+    ],
     'drupal_cms_installer_uninstall_myself' => [
       // As a final task, this profile should uninstall itself.
     ],
@@ -45,6 +68,10 @@ function drupal_cms_installer_install_tasks_alter(array &$tasks, array $install_
     ],
   ]);
 
+  // Bypass core's site configuration form, which is a mess.
+  $tasks['install_configure_form']['run'] = INSTALL_TASK_SKIP;
+  $tasks['install_configure_form']['display'] = FALSE;
+
   // Wrap the install_profile_modules() function, which returns a batch job, and
   // add all the necessary operations to apply the chosen template recipe.
   $tasks['install_profile_modules']['function'] = 'drupal_cms_installer_apply_recipes';
@@ -68,7 +95,7 @@ function drupal_cms_installer_form_install_settings_form_alter(array &$form): vo
  * Implements hook_form_alter() for install_configure_form.
  */
 function drupal_cms_installer_form_install_configure_form_alter(array &$form): void {
-  ['composer' => $composer, 'rsync' => $rsync] = Drupal::configFactory()
+  ['composer' => $composer, 'rsync' => $rsync] = \Drupal::configFactory()
     ->get('package_manager.settings')
     ->get('executables');
 
@@ -106,7 +133,7 @@ function _drupal_cms_installer_install_configure_form_submit(array &$form, FormS
   $rsync = $form_state->getValue('rsync');
 
   if ($composer && $rsync) {
-    Drupal::configFactory()
+    \Drupal::configFactory()
       ->getEditable('package_manager.settings')
       ->set('executables', [
         'composer' => $composer,
@@ -114,7 +141,7 @@ function _drupal_cms_installer_install_configure_form_submit(array &$form, FormS
       ])
       ->save();
 
-    Drupal::configFactory()
+    \Drupal::configFactory()
       ->getEditable('project_browser.admin_settings')
       ->set('allow_ui_install', TRUE)
       ->save();
@@ -133,8 +160,8 @@ function _drupal_cms_installer_install_configure_form_submit(array &$form, FormS
 function drupal_cms_installer_apply_recipes(array &$install_state): array {
   $batch = install_profile_modules($install_state);
 
-  $input_collector = Drupal::classResolver(InputCollector::class);
-  $cookbook_path = Drupal::root() . '/recipes';
+  $input_collector = \Drupal::classResolver(InputCollector::class);
+  $cookbook_path = \Drupal::root() . '/recipes';
 
   foreach ($install_state['parameters']['recipes'] as $recipe) {
     $recipe = Recipe::createFromDirectory($cookbook_path . '/' . $recipe);
@@ -148,10 +175,44 @@ function drupal_cms_installer_apply_recipes(array &$install_state): array {
 }
 
 /**
+ * Sets the site-wide email address to a no-reply.
+ */
+function drupal_cms_installer_set_site_mail(): void {
+  \Drupal::configFactory()
+    ->getEditable('system.site')
+    ->set('mail', 'no-reply@' . \Drupal::request()->getHost())
+    ->save();
+}
+
+/**
+ * Sets the default time zone to UTC.
+ */
+function drupal_cms_installer_set_time_zone(): void {
+  \Drupal::configFactory()
+    ->getEditable('system.date')
+    ->set('timezone.default', 'UTC')
+    ->save();
+}
+
+/**
+ * Installs and configures core's Update Status module.
+ */
+function drupal_cms_installer_install_update_status(): void {
+  \Drupal::service(ModuleInstallerInterface::class)->install(['update']);
+
+  \Drupal::configFactory()
+    ->getEditable('update.settings')
+    ->set('notifications.emails', [
+      User::load(1)->getEmail(),
+    ])
+    ->save();
+}
+
+/**
  * Uninstalls this install profile, as a final step.
  */
 function drupal_cms_installer_uninstall_myself(): void {
-  Drupal::service(ModuleInstallerInterface::class)->uninstall([
+  \Drupal::service(ModuleInstallerInterface::class)->uninstall([
     'drupal_cms_installer',
   ]);
 }
