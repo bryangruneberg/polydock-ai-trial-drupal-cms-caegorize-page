@@ -32,14 +32,18 @@ class InstallerTest extends InstallerTestBase {
    */
   protected function setUpSettings(): void {
     $assert_session = $this->assertSession();
-
     $assert_session->buttonExists('Skip this step');
+    // The list of languages should be exposed to JavaScript.
+    $this->assertArrayHasKey('languages', $this->getDrupalSettings());
+
     // Choose all the add-ons!
     $this->submitForm([
       'add_ons[drupal_cms_accessibility_tools]' => TRUE,
       'add_ons[drupal_cms_multilingual]' => TRUE,
     ], 'Next');
 
+    // The list of languages should still be exposed to JavaScript.
+    $this->assertArrayHasKey('languages', $this->getDrupalSettings());
     // Now we should be asked for the site name, with a default value in place
     // for the truly lazy.
     $assert_session->pageTextContains('Give your site a name');

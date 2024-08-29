@@ -4,8 +4,7 @@
     "description": "Provides install-time tweaks for Drupal CMS. Not to be used in production.",
     "version": "dev-main",
     "require": {
-        "drupal/core": ">=10.3",
-        "drupal/dashboard": "2.x-dev"
+        "drupal/core": ">=10.3"
     },
     "autoload": {
         "psr-4": {

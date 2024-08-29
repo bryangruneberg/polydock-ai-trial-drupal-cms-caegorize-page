@@ -2,9 +2,7 @@
 
 namespace Drupal\drupal_cms_installer\Form;
 
-use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
-use Drupal\Core\Render\Element;
 
 /**
  * Provides a form to choose the site template and optional add-on recipes.
@@ -12,7 +10,7 @@ use Drupal\Core\Render\Element;
  * @todo Present this as a mini project browser once
  *   https://www.drupal.org/i/3450629 is fixed.
  */
-final class RecipesForm extends FormBase {
+final class RecipesForm extends InstallerFormBase {
 
   /**
    * {@inheritdoc}
@@ -50,7 +48,7 @@ final class RecipesForm extends FormBase {
       ],
       '#type' => 'actions',
     ];
-    return $form;
+    return parent::buildForm($form, $form_state);
   }
 
   /**
