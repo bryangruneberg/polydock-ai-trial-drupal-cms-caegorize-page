@@ -27,6 +27,7 @@ recipes:
   - drupal_cms_seo_basic
   - drupal_cms_workflows
 install:
+  - dashboard
   - eca_ui
   - login_emailusername
   - menu_link_content

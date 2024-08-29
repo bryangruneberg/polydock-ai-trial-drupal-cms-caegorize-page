@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Drupal\Tests\drupal_cms_installer\Functional;
 
-use Behat\Mink\Element\ElementInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Extension\ExtensionList;
 use Drupal\Core\Extension\ModuleExtensionList;
@@ -32,17 +31,25 @@ class InstallerTest extends InstallerTestBase {
    * {@inheritdoc}
    */
   protected function setUpSettings(): void {
-    // Drupal CMS inserts a page here to select a template recipe, and add-ons.
-    // Right now, there's only one option.
-    $this->assertSession()->fieldValueEquals('template', 'drupal_cms');
+    $assert_session = $this->assertSession();
 
+    $assert_session->buttonExists('Skip this step');
     // Choose all the add-ons!
-    $page = $this->getSession()->getPage();
-    $page->checkField('add_ons[drupal_cms_accessibility_tools]');
-    $page->checkField('add_ons[drupal_cms_multilingual]');
+    $this->submitForm([
+      'add_ons[drupal_cms_accessibility_tools]' => TRUE,
+      'add_ons[drupal_cms_multilingual]' => TRUE,
+    ], 'Next');
 
-    // Continue with the normal database settings form.
-    $page->pressButton('Save and continue');
+    // Now we should be asked for the site name, with a default value in place
+    // for the truly lazy.
+    $assert_session->pageTextContains('Give your site a name');
+    $assert_session->elementAttributeExists('named', ['field', 'Site name'], 'required');
+    $assert_session->fieldValueEquals('Site name', 'My awesome site');
+    // We have to use submitForm() to ensure that batch operations, redirects,
+    // and so forth in the remaining install tasks get done.
+    $this->submitForm(['Site name' => 'Drupal CMS'], 'Next');
+
+    // Proceed to the database settings form.
     parent::setUpSettings();
   }
 
@@ -59,36 +66,23 @@ class InstallerTest extends InstallerTestBase {
    */
   protected function visitInstaller(): void {
     parent::visitInstaller();
+    // The task list should be hidden.
+    $this->assertSession()->elementNotExists('css', '.task-list');
+  }
 
-    $tasks = array_map(
-      fn (ElementInterface $item) => $item->getText(),
-      $this->assertSession()->elementExists('css', 'ol.task-list')->findAll('css', 'li'),
-    );
-    // Core's "Configure site" step should be hidden.
-    $this->assertNotContains('Configure site', $tasks);
+  /**
+   * {@inheritdoc}
+   */
+  protected function setUpLanguage() {
+    // The Drupal CMS installer suppresses the language selection step, so
+    // there's nothing to do here.
   }
 
   /**
    * {@inheritdoc}
    */
   protected function setUpSite(): void {
-    $assert_session = $this->assertSession();
-    $assert_session->pageTextContains('Give your site a name');
-    $assert_session->elementAttributeExists('named', ['field', 'Site name'], 'required');
-    // We have to use submitForm() to ensure that batch operations, redirects,
-    // and so forth in the remaining install tasks get done.
-    $this->submitForm(['Site name' => 'Drupal CMS'], 'Continue');
-
-    $assert_session->pageTextContains('Create your user account');
-    $assert_session->elementAttributeExists('named', ['field', 'Email address'], 'required');
-    $assert_session->elementAttributeExists('named', ['field', 'Password'], 'required');
-    $assert_session->elementAttributeExists('named', ['field', 'Confirm password'], 'required');
-    $this->submitForm([
-      'mail' => 'test@drupal.cms',
-      'password[pass1]' => 'pastafazoul',
-      'password[pass2]' => 'pastafazoul',
-    ], 'Continue');
-
+    // The normal site configuration form is bypassed, so we're done.
     $this->isInstalled = TRUE;
   }
 
@@ -98,24 +92,21 @@ class InstallerTest extends InstallerTestBase {
   public function testPostInstallState(): void {
     // The site name and site-wide email address should have been set.
     // @see \Drupal\drupal_cms_installer\Form\SiteNameForm
-    // @see drupal_cms_installer_set_site_mail()
     $site_config = $this->config('system.site');
     $this->assertSame('Drupal CMS', $site_config->get('name'));
-    $this->assertStringStartsWith('no-reply@', $site_config->get('mail'));
 
-    // The default time zone should be UTC.
-    // @see drupal_cms_installer_set_time_zone()
-    $this->assertSame('UTC', $this->config('system.date')->get('timezone.default'));
+    $host = parse_url($this->baseUrl, PHP_URL_HOST);
+    $this->assertSame("no-reply@$host", $site_config->get('mail'));
 
     // Update Status should be installed, and user 1 should be getting its
     // notifications.
-    // @see drupal_cms_installer_install_update_status()
     $this->assertTrue($this->container->get(ModuleHandlerInterface::class)->moduleExists('update'));
     $account = User::load(1);
-    $this->assertContains($account->getEmail(), $this->config('update.settings')->get('notifications.emails'));
-    // User 1 should have an administrator role.
-    // @see \Drupal\drupal_cms_installer\Form\AccountForm::submitForm()
+    $this->assertContains($account->getEmail(), $this->config('update.settings')->get('notification.emails'));
     $this->assertContains('administrator', $account->getRoles());
+    // The installer generates a random password, so change that in order to
+    // test logging in.
+    $account->setPassword('pastafazoul')->save();
 
     // The installer should have uninstalled itself.
     // @see drupal_cms_installer_uninstall_myself()
@@ -133,11 +124,11 @@ class InstallerTest extends InstallerTestBase {
 
     // It should be possible to log in with your email address.
     $page = $this->getSession()->getPage();
-    $page->fillField('name', 'test@drupal.cms');
+    $page->fillField('name', "admin@$host");
     $page->fillField('pass', 'pastafazoul');
     $page->pressButton('Log in');
     $assert_session = $this->assertSession();
-    $assert_session->addressEquals('/user/1');
+    $assert_session->addressEquals('/admin/dashboard');
     $this->drupalLogout();
 
     // It should also be possible to log in with the username, which is
@@ -145,7 +136,7 @@ class InstallerTest extends InstallerTestBase {
     $page->fillField('name', 'admin');
     $page->fillField('pass', 'pastafazoul');
     $page->pressButton('Log in');
-    $assert_session->addressEquals('/user/1');
+    $assert_session->addressEquals('/admin/dashboard');
     $this->drupalLogout();
 
     $editor = $this->drupalCreateUser();

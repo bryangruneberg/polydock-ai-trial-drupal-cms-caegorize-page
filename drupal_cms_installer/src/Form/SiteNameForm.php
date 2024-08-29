@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace Drupal\drupal_cms_installer\Form;
 
-use Drupal\Core\Form\ConfigFormBase;
+use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
 
 /**
  * Defines a form to set the site name.
  */
-final class SiteNameForm extends ConfigFormBase {
+final class SiteNameForm extends FormBase {
 
   /**
    * {@inheritdoc}
@@ -22,28 +22,36 @@ final class SiteNameForm extends ConfigFormBase {
   /**
    * {@inheritdoc}
    */
-  protected function getEditableConfigNames(): array {
-    return ['system.site'];
+  public function buildForm(array $form, FormStateInterface $form_state): array {
+    global $install_state;
+
+    $form['#title'] = $this->t('Give your site a name');
+    $form['help']['#markup'] = $this->t('You can change this later before publishing your site.');
+
+    $form['site_name'] = [
+      '#type' => 'textfield',
+      '#title' => $this->t('Site name'),
+      '#required' => TRUE,
+      '#default_value' => $install_state['forms']['install_configure_form']['site_name'] ?? $this->t('My awesome site'),
+    ];
+    $form['actions'] = [
+      '#type' => 'actions',
+      'submit' => [
+        '#type' => 'submit',
+        '#value' => $this->t('Next'),
+        '#button_type' => 'primary',
+      ],
+    ];
+
+    return $form;
   }
 
   /**
    * {@inheritdoc}
    */
-  public function buildForm(array $form, FormStateInterface $form_state, ?array &$install_state = NULL) {
-    $form['site_name'] = [
-      '#type' => 'textfield',
-      '#title' => $this->t('Site name'),
-      '#title_display' => 'invisible',
-      '#required' => TRUE,
-      '#default_value' => $install_state['forms']['install_configure_form']['site_name'] ?? '',
-      '#config_target' => 'system.site:name',
-    ];
-    $form['#title'] = $this->t('Give your site a name');
-
-    $form = parent::buildForm($form, $form_state);
-    $form['actions']['submit']['#value'] = $this->t('Continue');
-
-    return $form;
+  public function submitForm(array &$form, FormStateInterface $form_state): void {
+    global $install_state;
+    $install_state['parameters']['site_name'] = $form_state->getValue('site_name');
   }
 
 }

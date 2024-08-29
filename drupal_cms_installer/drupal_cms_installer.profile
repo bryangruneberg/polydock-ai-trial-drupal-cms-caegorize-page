@@ -2,42 +2,19 @@
 
 declare(strict_types=1);
 
+use Drupal\Component\Utility\Random;
 use Drupal\Core\Extension\ModuleInstallerInterface;
-use Drupal\Core\Form\FormStateInterface;
-use Drupal\Core\Recipe\InputCollector;
+use Drupal\Core\Installer\Form\SiteConfigureForm;
 use Drupal\Core\Recipe\Recipe;
 use Drupal\Core\Recipe\RecipeRunner;
-use Drupal\drupal_cms_installer\Form\AccountForm;
 use Drupal\drupal_cms_installer\Form\RecipesForm;
 use Drupal\drupal_cms_installer\Form\SiteNameForm;
-use Drupal\user\Entity\User;
-use Symfony\Component\Process\ExecutableFinder;
 
 /**
  * Implements hook_install_tasks().
  */
 function drupal_cms_installer_install_tasks(): array {
   return [
-    'drupal_cms_installer_site_name_form' => [
-      'display' => FALSE,
-      'type' => 'form',
-      'function' => SiteNameForm::class,
-    ],
-    'drupal_cms_installer_account_form' => [
-      'display' => FALSE,
-      'type' => 'form',
-      'function' => AccountForm::class,
-    ],
-    'drupal_cms_installer_set_site_mail' => [
-      // Sets the site-wide email address to a no-reply.
-    ],
-    'drupal_cms_installer_set_time_zone' => [
-      // Sets the default time zone to UTC.
-    ],
-    'drupal_cms_installer_install_update_status' => [
-      // Install the Update Status module and configure user 1 to receive
-      // email notifications from it.
-    ],
     'drupal_cms_installer_uninstall_myself' => [
       // As a final task, this profile should uninstall itself.
     ],
@@ -61,16 +38,26 @@ function drupal_cms_installer_install_tasks_alter(array &$tasks, array $install_
   };
   $insert_before('install_settings_form', [
     'drupal_cms_installer_choose_recipes' => [
-      'display_name' => t('Choose template & add-ons'),
+      'display_name' => t('Choose add-ons'),
       'type' => 'form',
       'run' => array_key_exists('recipes', $install_state['parameters']) ? INSTALL_TASK_SKIP : INSTALL_TASK_RUN_IF_REACHED,
       'function' => RecipesForm::class,
     ],
+    'drupal_cms_installer_site_name_form' => [
+      'display_name' => t('Name your site'),
+      'type' => 'form',
+      'run' => array_key_exists('site_name', $install_state['parameters']) ? INSTALL_TASK_SKIP : INSTALL_TASK_RUN_IF_REACHED,
+      'function' => SiteNameForm::class,
+    ],
   ]);
 
-  // Bypass core's site configuration form, which is a mess.
-  $tasks['install_configure_form']['run'] = INSTALL_TASK_SKIP;
-  $tasks['install_configure_form']['display'] = FALSE;
+  // Skip the language selection step.
+  $tasks['install_select_language']['run'] = INSTALL_TASK_SKIP;
+
+  // Submit the site configuration form programmatically.
+  $tasks['install_configure_form'] = [
+    'function' => 'drupal_cms_installer_configure_site',
+  ];
 
   // Wrap the install_profile_modules() function, which returns a batch job, and
   // add all the necessary operations to apply the chosen template recipe.
@@ -92,63 +79,6 @@ function drupal_cms_installer_form_install_settings_form_alter(array &$form): vo
 }
 
 /**
- * Implements hook_form_alter() for install_configure_form.
- */
-function drupal_cms_installer_form_install_configure_form_alter(array &$form): void {
-  ['composer' => $composer, 'rsync' => $rsync] = \Drupal::configFactory()
-    ->get('package_manager.settings')
-    ->get('executables');
-
-  $finder = new ExecutableFinder();
-  $finder->addSuffix('.phar');
-  $composer ??= $finder->find('composer');
-  $rsync ??= $finder->find('rsync');
-
-  $form['package_manager'] = [
-    '#type' => 'fieldset',
-    '#title' => t('Package Manager settings (advanced)'),
-    '#description' => t("To install extensions in the administrative interface, Drupal needs to know where Composer and <code>rsync</code> are. This will be auto-detected if possible. If you leave these blank, you can still browse for extensions but you'll need to use the command line to install them."),
-  ];
-  $form['package_manager']['composer'] = [
-    '#type' => 'textfield',
-    '#title' => t('Full path to <code>composer</code> or <code>composer.phar</code>'),
-    '#default_value' => $composer,
-  ];
-  $form['package_manager']['rsync'] = [
-    '#type' => 'textfield',
-    '#title' => t('Full path to <code>rsync</code>'),
-    '#default_value' => $rsync,
-  ];
-  $form['#submit'][] = '_drupal_cms_installer_install_configure_form_submit';
-}
-
-/**
- * Submit callback for install_configure_form.
- *
- * Sets the full paths to Composer and rsync, if available, and enables
- * installing projects via the Project Browser UI.
- */
-function _drupal_cms_installer_install_configure_form_submit(array &$form, FormStateInterface $form_state): void {
-  $composer = $form_state->getValue('composer');
-  $rsync = $form_state->getValue('rsync');
-
-  if ($composer && $rsync) {
-    \Drupal::configFactory()
-      ->getEditable('package_manager.settings')
-      ->set('executables', [
-        'composer' => $composer,
-        'rsync' => $rsync,
-      ])
-      ->save();
-
-    \Drupal::configFactory()
-      ->getEditable('project_browser.admin_settings')
-      ->set('allow_ui_install', TRUE)
-      ->save();
-  }
-}
-
-/**
  * Runs a batch job that applies the template and add-on recipes.
  *
  * @param array $install_state
@@ -159,13 +89,12 @@ function _drupal_cms_installer_install_configure_form_submit(array &$form, FormS
  */
 function drupal_cms_installer_apply_recipes(array &$install_state): array {
   $batch = install_profile_modules($install_state);
+  $batch['title'] = t('Setting up your site');
 
-  $input_collector = \Drupal::classResolver(InputCollector::class);
   $cookbook_path = \Drupal::root() . '/recipes';
 
   foreach ($install_state['parameters']['recipes'] as $recipe) {
     $recipe = Recipe::createFromDirectory($cookbook_path . '/' . $recipe);
-    $input_collector->prepare($recipe);
 
     foreach (RecipeRunner::toBatchOperations($recipe) as $operation) {
       $batch['operations'][] = $operation;
@@ -175,37 +104,61 @@ function drupal_cms_installer_apply_recipes(array &$install_state): array {
 }
 
 /**
- * Sets the site-wide email address to a no-reply.
+ * Programmatically executes core's site configuration form.
  */
-function drupal_cms_installer_set_site_mail(): void {
-  \Drupal::configFactory()
-    ->getEditable('system.site')
-    ->set('mail', 'no-reply@' . \Drupal::request()->getHost())
-    ->save();
+function drupal_cms_installer_configure_site(array &$install_state): ?array {
+  $random_password = (new Random())->machineName();
+  $host = \Drupal::request()->getHost();
+
+  $install_state['forms'] += [
+    'install_configure_form' => [
+      'site_name' => $install_state['parameters']['site_name'],
+      'site_mail' => "no-reply@$host",
+      'account' => [
+        'name' => 'admin',
+        'mail' => "admin@$host",
+        'pass' => [
+          'pass1' => $random_password,
+          'pass2' => $random_password,
+        ],
+      ],
+    ],
+  ];
+  // Temporarily switch to non-interactive mode and programmatically submit
+  // the form.
+  $interactive = $install_state['interactive'];
+  $install_state['interactive'] = FALSE;
+  $result = install_get_form(SiteConfigureForm::class, $install_state);
+  $install_state['interactive'] = $interactive;
+
+  $messenger = \Drupal::messenger();
+  // Clear all previous status messages to avoid clutter.
+  $messenger->deleteByType($messenger::TYPE_STATUS);
+
+  $message = t('<strong>IMPORTANT:</strong> Your login details are admin/@password. Make a note of this to recover your work later.', [
+    '@password' => $install_state['forms']['install_configure_form']['account']['pass']['pass1'],
+  ]);
+  $messenger->addStatus($message);
+
+  return $result;
 }
 
 /**
- * Sets the default time zone to UTC.
+ * Implements hook_library_info_alter().
  */
-function drupal_cms_installer_set_time_zone(): void {
-  \Drupal::configFactory()
-    ->getEditable('system.date')
-    ->set('timezone.default', 'UTC')
-    ->save();
-}
+function drupal_cms_installer_library_info_alter(array &$libraries, string $extension): void {
+  $base_path = \Drupal::request()->getBasePath();
+  $base_path = dirname($base_path);
 
-/**
- * Installs and configures core's Update Status module.
- */
-function drupal_cms_installer_install_update_status(): void {
-  \Drupal::service(ModuleInstallerInterface::class)->install(['update']);
+  global $install_state;
+  $base_path .= $install_state['profiles']['drupal_cms_installer']->getPath();
 
-  \Drupal::configFactory()
-    ->getEditable('update.settings')
-    ->set('notifications.emails', [
-      User::load(1)->getEmail(),
-    ])
-    ->save();
+  if ($extension === 'claro') {
+    $libraries['maintenance-page']['css']['theme']["$base_path/css/installer-styles.css"] = [];
+  }
+  if ($extension === 'core') {
+    $libraries['drupal.progress']['js']["$base_path/js/progress.js"] = [];
+  }
 }
 
 /**
@@ -215,4 +168,12 @@ function drupal_cms_installer_uninstall_myself(): void {
   \Drupal::service(ModuleInstallerInterface::class)->uninstall([
     'drupal_cms_installer',
   ]);
+}
+
+/**
+ * Preprocess function for all pages in the installer.
+ */
+function drupal_cms_installer_preprocess_install_page(array &$variables): void {
+  // Don't show the task list or the version of Drupal.
+  unset($variables['page']['sidebar_first'], $variables['site_version']);
 }

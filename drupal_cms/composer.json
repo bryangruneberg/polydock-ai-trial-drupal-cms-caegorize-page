@@ -5,6 +5,7 @@
     "version": "dev-main",
     "require": {
         "drupal/core": ">=10.3",
+        "drupal/dashboard": "2.x-dev",
         "drupal/eca": "^2",
         "drupal/login_emailusername": "^2.1",
         "drupal/drupal_cms_admin_theme": "*",

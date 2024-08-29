@@ -7,5 +7,4 @@ description: 'Provides install-time tweaks for Drupal CMS. Not to be used in pro
 distribution:
   name: Drupal CMS
   install:
-    # Redirect to the project browser after installing.
-    finish_url: 'admin/modules/browse'
+    finish_url: '/admin/dashboard/welcome'

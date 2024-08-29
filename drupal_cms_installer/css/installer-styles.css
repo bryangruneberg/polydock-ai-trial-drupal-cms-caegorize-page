@@ -1,0 +1,32 @@
+/**
+ * @file
+ * This file specifically overrides Claro's maintenance page styling to make
+ * tweaks specific to the Drupal CMS installer. None of this needs to be
+ * reusable.
+ */
+.layout-container.layout-container.layout-container {
+  width: auto;
+  max-width: none;
+}
+
+#drupal-cms-installer-recipes-form #edit-add-ons .form-item {
+  display: inline-block;
+}
+#drupal-cms-installer-recipes-form #edit-add-ons .form-item__label.option {
+  display: block;
+  padding: .6rem;
+  border-radius: 1rem;
+  border: 1px solid black;
+  transition: background-color .3s;
+}
+#drupal-cms-installer-recipes-form #edit-add-ons input {
+  display: none;
+}
+#drupal-cms-installer-recipes-form #edit-add-ons input:checked + .form-item__label.option {
+  background-color: red;
+}
+#drupal-cms-installer-recipes-form #edit-skip {
+  background-color: transparent;
+  text-decoration: underline;
+  box-shadow: none;
+}
