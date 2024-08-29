@@ -61,6 +61,8 @@ build trial artifact:
   needs:
     - build project
     - run tests
+  variables:
+    DRUPAL_CMS_TRIAL: 1
   script:
     - cd project
     - cp -R -v $CI_PROJECT_DIR/trial/artifact_assets/* .
@@ -73,19 +75,6 @@ build trial artifact:
     - find . -depth -type d -name tests -exec rm -r -f "{}" ';'
     # Install Drupal CMS.
     - vendor/bin/drush site:install --yes
-    # Use a test mail collector, since the trial won't have access to sendmail.
-    - vendor/bin/drush config:set --yes system.mail interface.default test_mail_collector
-    # Disable CSS/JS aggregation.
-    - vendor/bin/drush config:set --yes --input-format=yaml system.performance css.preprocess false
-    - vendor/bin/drush config:set --yes --input-format=yaml system.performance js.preprocess false
-    # Enable verbose logging.
-    - vendor/bin/drush config:set --yes system.logging error_level verbose
-    # Fibers are not supported in Wasm, which Big Pipe leverages.
-    - vendor/bin/drush pm:uninstall --yes big_pipe
-    # Processes like Composer and HTTP requests cannot be executed within Wasm.
-    # @todo revisit once php-wasm maps HTTP requests from PHP to Fetch API.
-    - vendor/bin/drush pm:uninstall --yes update automatic_updates
-    - vendor/bin/drush config:set --yes --input-format=yaml project_browser.admin_settings allow_ui_install false
     # Serve the installed project via the built-in PHP server to confirm that an HTTP
     # request is successful. The server's command-line output is silenced just to make
     # the job log more readable.

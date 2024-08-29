@@ -15,6 +15,9 @@ use Drupal\drupal_cms_installer\Form\SiteNameForm;
  */
 function drupal_cms_installer_install_tasks(): array {
   return [
+    'drupal_cms_installer_prepare_trial' => [
+      'run' => getenv('DRUPAL_CMS_TRIAL') ? INSTALL_TASK_RUN_IF_REACHED : INSTALL_TASK_SKIP,
+    ],
     'drupal_cms_installer_uninstall_myself' => [
       // As a final task, this profile should uninstall itself.
     ],
@@ -159,6 +162,43 @@ function drupal_cms_installer_library_info_alter(array &$libraries, string $exte
   if ($extension === 'core') {
     $libraries['drupal.progress']['js']["$base_path/js/progress.js"] = [];
   }
+}
+
+/**
+ * Makes configuration changes needed for the in-browser trial.
+ */
+function drupal_cms_installer_prepare_trial(): void {
+  // Use a test mail collector, since the trial won't have access to sendmail.
+  \Drupal::configFactory()
+    ->getEditable('system.mail')
+    ->set('interface.default', 'test_mail_collector')
+    ->save();
+
+  // Disable CSS and JS aggregation.
+  \Drupal::configFactory()
+    ->getEditable('system.performance')
+    ->set('css.preprocess', FALSE)
+    ->set('js.preprocess', FALSE)
+    ->save();
+
+  // Enable verbose logging.
+  \Drupal::configFactory()
+    ->getEditable('system.logging')
+    ->set('error_level', 'verbose')
+    ->save();
+
+  // Disable things that the WebAssembly runtime doesn't (yet) support, like
+  // running external processes, making HTTP requests, or using fibers.
+  // @todo revisit once php-wasm maps HTTP requests from PHP to Fetch API.
+  \Drupal::service(ModuleInstallerInterface::class)->uninstall([
+    'automatic_updates',
+    'big_pipe',
+    'update',
+  ]);
+  \Drupal::configFactory()
+    ->getEditable('project_browser.admin_settings')
+    ->set('allow_ui_install', FALSE)
+    ->save();
 }
 
 /**
