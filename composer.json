@@ -39,17 +39,6 @@
         "optimize-autoloader": true
     },
     "extra": {
-        "drupal-scaffold": {
-            "allowed-packages": [
-                "amazeeio/drupal_integrations"
-            ],
-            "file-mapping": {
-                "[web-root]/sites/default/all.settings.php": "assets/all.settings.php"
-            },
-            "locations": {
-                "web-root": "web/"
-            }
-        },
         "installer-paths": {
             "web/core": ["type:drupal-core"],
             "web/libraries/{$name}": ["type:drupal-library"],

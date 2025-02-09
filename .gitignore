@@ -25,3 +25,13 @@ web/sites/simpletest
 /.idea/
 /.editorconfig
 /.gitattributes
+.csslintrc
+.eslintignore
+.eslintrc.json
+.ht.router.php
+.htaccess
+autoload.php
+index.php
+INSTALL.txt
+robots.txt
+update.php
