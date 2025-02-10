@@ -17,7 +17,7 @@
     "require": {
         "amazeeio/drupal_integrations": "^0.4",
         "cweagans/composer-patches": "^2",
-        "drupal/cms": "1.0.2",
+        "drupal/cms": "^1.0.2",
         "drupal/lagoon_logs": "^3.0"
     },
     "conflict": {
@@ -40,9 +40,6 @@
     },
     "extra": {
         "drupal-scaffold": {
-            "allowed-packages": [
-                "amazeeio/drupal_integrations"
-            ],
             "file-mapping": {
                 "[web-root]/sites/default/all.settings.php": "assets/all.settings.php"
             },
