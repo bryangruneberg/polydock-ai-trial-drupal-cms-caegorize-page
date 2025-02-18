@@ -10,6 +10,7 @@ if [ ! -f "$FLAG_FILE" ]; then
     composer install --no-dev
     cp -r /app/vendor/drupal/cms/web/profiles/drupal_cms_installer /app/web/profiles/
     cp /app/drush/Commands/contrib/drupal_integrations/assets/* /app/web/sites/default
+    cp /app/.lagoon/assets/* /app/web/sites/default
     mv /app/web/sites/default/initial.settings.php /app/web/sites/default/settings.php
     
     # Create the flag file to indicate the script has run
