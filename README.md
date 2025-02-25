@@ -1,27 +1,63 @@
 # Lagoon Drupal CMS example
 
-This project is a wrapper around the [Drupal Starshot](https://www.drupal.org/about/starshot) initiative.
+## Overview
 
-It uses the [Drupal CMS](https://www.drupal.org/project/drupal_cms) default download to provision a Drupal Site.
+This is an example project demonstrating how to set up a Drupal CMS based environment on Lagoon.
 
-As of August 2024 it doesn't support local development, Project Browser or Automated Updates.
+When running on a Lagoon instance, the first time that the project starts up, it will attempt to install Drupal-CMS - see the `.lagoon.yml` file for how this is achieved using a post rollout task.
 
-To get started:
-```
+The `./.lagoon/scripts/scaffold.sh` script plays a key role in setting up the project, ensuring necessary dependencies and configurations are applied when running locally versus within Lagoon. See the file and the Dockerfile to see how this is achieved.
+
+## Local Development
+
+### How to Run Locally
+
+To set up and run the project locally, execute the following commands:
+
+```sh
 docker compose build
 docker compose up -d
 docker compose exec cli bash -c 'wait-for mariadb:3306'
 docker compose exec cli bash -c 'drush -y si && drush -y cr'
-echo "visit http://$(docker compose port nginx 8080) to see your site"
 ```
 
-Any modules required can be added to the root composer.json in this directory and then :
+These commands will:
 
-```
-composer require --no-update drupal/XXX
-docker compose build
-docker compose up -d
-docker compose exec cli bash -c 'wait-for mariadb:3306'
-docker compose exec cli bash -c 'drush -y updb && drush -y cr'
-echo "visit http://$(docker compose port nginx 8080) to see your site"
-```
+1. Build the necessary Docker containers.
+2. Start the containers in detached mode.
+3. Wait for the MariaDB service to become available.
+4. Install Drupal and rebuild the cache using Drush.
+
+### Using the Project Browser to install modules (Only Usable When Running Locally)
+
+The Project Browser can be used to install modules through the UI when running locally. To do so:
+
+1. Visit `/admin/modules/browse/drupalorg_jsonapi`.
+2. Install a module using the UI.
+3. This will update the `composer.json` and `composer.lock` files.
+4. Commit these changes to the repository and push them up.
+5. The module will still need to be enabled on the live site, but the composer packages will have been updated correctly.
+
+
+
+## Technical Details
+
+### `scaffold.sh` Script: Scaffolding Mechanism
+
+The `scaffold.sh` script is responsible for initializing the Drupal project in both local and Lagoon environments. It primarily:
+
+- Installs dependencies when running locally.
+- Ensures required configurations and files are in place.
+- Prevents reinstallation if scaffolding has already been completed.
+
+#### Summary of Execution
+
+- The script checks for the presence of `/app/scaffolding_done.flag`. If found, it skips execution.
+- When running **locally**, it installs dependencies using `composer install --no-dev` and copies necessary configuration assets.
+- When running **inside Lagoon**, it ensures required setup files exist but skips dependency installation.
+- It is executed as part of the container's entrypoints, as defined in the Dockerfile.
+
+### Disabling Project Browser Auto-Installation in Lagoon
+
+To ensure a smooth setup in cloud environments, auto-installation of the Project Browser has been disabled when running in Lagoon. This prevents conflicts and ensures proper configuration management.
+
