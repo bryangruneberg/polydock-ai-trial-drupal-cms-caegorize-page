@@ -8,12 +8,8 @@ cd /app
 if [ ! -f "$FLAG_FILE" ]; then
     echo "*** NO SCAFFOLD FILE FOUND ***"
     git config --global --add safe.directory /app
-    if [ -z "$LAGOON_KUBERNETES" ]; then
-        echo "Not running in Lagoon - we will try install"
-        composer install --no-dev
-        cp -r /app/vendor/drupal/cms/web/profiles/drupal_cms_installer /app/web/profiles/
-        cp /app/drush/Commands/contrib/drupal_integrations/assets/* /app/web/sites/default
-    fi    
+    composer install --no-dev
+    cp -r /app/vendor/drupal/cms/web/profiles/drupal_cms_installer /app/web/profiles/
     # Create the flag file to indicate the script has run
     echo "About to create $FLAG_FILE"
     touch "$FLAG_FILE"
@@ -22,8 +18,13 @@ else
     echo "The initialization script has already run."
 fi
 
-# here we attempt to copy the details
+# We attempt to copy the configuration settings into the appropriate location
+# This may run in several circumstances, locally,
 if [ ! -f "/app/web/sites/default/settings.php" ]; then
+    # First, we copy in the default settings from the composer installed drupal_integrations
+    cp /app/drush/Commands/contrib/drupal_integrations/assets/* /app/web/sites/default
+    # Second, we move over anything from our assets that we may want to use to override/supplement the defaults
     cp /app/.lagoon/assets/* /app/web/sites/default
+    # Finally, we enable the lagoon settings for the site
     mv /app/web/sites/default/initial.settings.php /app/web/sites/default/settings.php
 fi
