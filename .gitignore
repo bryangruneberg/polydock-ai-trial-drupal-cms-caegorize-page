@@ -39,3 +39,5 @@ update.php
 
 # ignore scaffolding flag scaffolding_done.flag
 scaffolding_done.flag
+.env.local
+
