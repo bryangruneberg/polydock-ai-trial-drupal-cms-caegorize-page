@@ -17,6 +17,8 @@
     "require": {
         "amazeeio/drupal_integrations": "^0.4",
         "cweagans/composer-patches": "^2",
+        "drupal/ai_provider_amazeeio_recipe": "^1.0@beta",
+        "drupal/amazeeio_categorize_page": "1.0.x-dev",
         "drupal/cms": "^1.0.2",
         "drupal/lagoon_logs": "^3.0"
     },
